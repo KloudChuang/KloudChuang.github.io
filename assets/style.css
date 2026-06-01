@@ -113,7 +113,36 @@ body {
 .navlinks a::before { content: ""; position: absolute; left: 0; bottom: -3px; width: 0; height: 1px; background: var(--accent); transition: width 0.25s var(--ease); }
 .navlinks a:hover { color: var(--ink); }
 .navlinks a:hover::before { width: 100%; }
-@media (max-width: 620px) { .navlinks { gap: 0.95rem; font-size: 0.68rem; } .navlinks .hide-sm { display: none; } }
+
+/* hamburger toggle (mobile only) */
+.nav-toggle {
+  display: none; flex-direction: column; justify-content: center; gap: 4px;
+  width: 40px; height: 34px; padding: 0 10px; cursor: pointer;
+  background: transparent; border: 1px solid var(--hair); border-radius: 8px;
+}
+.nav-toggle .bar { display: block; width: 100%; height: 2px; border-radius: 2px; background: var(--ink);
+  transition: transform 0.25s var(--ease), opacity 0.2s var(--ease); }
+
+@media (max-width: 620px) {
+  .nav-toggle { display: inline-flex; }
+  .navlinks {
+    position: absolute; top: calc(100% + 8px); right: var(--gut);
+    flex-direction: column; align-items: stretch; gap: 0;
+    min-width: 188px; padding: 0.4rem; font-size: 0.86rem;
+    background: var(--paper); border: 1px solid var(--hair); border-radius: 12px;
+    box-shadow: 0 14px 34px oklch(0.235 0.014 255 / 0.14);
+    opacity: 0; visibility: hidden; transform: translateY(-8px);
+    transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), visibility 0.2s;
+  }
+  .navlinks .hide-sm { display: block; }
+  .navlinks a { padding: 0.62rem 0.7rem; border-radius: 7px; color: var(--ink-2); }
+  .navlinks a::before { display: none; }
+  .navlinks a:hover, .navlinks a:focus { background: var(--accent-soft); color: var(--accent-ink); }
+  .topnav.nav-open .navlinks { opacity: 1; visibility: visible; transform: translateY(0); }
+  .topnav.nav-open .nav-toggle .bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .topnav.nav-open .nav-toggle .bar:nth-child(2) { opacity: 0; }
+  .topnav.nav-open .nav-toggle .bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+}
 
 /* ---------- layout ---------- */
 main { max-width: var(--max); margin: 0 auto; padding: 0 var(--gut); position: relative; z-index: 1; }
