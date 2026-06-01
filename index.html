@@ -7,7 +7,6 @@
   <meta name="description" content="Yun-Yen Chuang — Founder & CEO of Maxora AI, Ph.D. in Electrical Engineering at National Taiwan University. Research on meta-learning, diffusion models, and natural language generation." />
   <meta name="author" content="Yun-Yen Chuang" />
 
-  <!-- Open Graph -->
   <meta property="og:title" content="Yun-Yen Chuang" />
   <meta property="og:description" content="Founder & CEO of Maxora AI · Ph.D. @ NTU EE · Meta-learning, diffusion models, NLG." />
   <meta property="og:type" content="website" />
@@ -15,96 +14,257 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz@0,6..72;1,6..72&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main>
-    <!-- Header -->
+  <!-- Flowing background layers -->
+  <canvas id="flow"></canvas>
+  <div class="aurora">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+  </div>
+  <div class="grid-overlay"></div>
+
+  <!-- Nav -->
+  <nav class="topnav">
+    <a class="brand" href="#top">YC</a>
+    <div class="navlinks">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#pubs">Publications</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <!-- HERO -->
     <header class="hero">
-      <div class="hero-text">
-        <h1>Yun-Yen Chuang</h1>
-        <p class="tagline">Founder &amp; CEO @ <a href="https://maxora.ai">Maxora AI</a> · Ph.D. @ National Taiwan University (EE)</p>
-        <p class="keywords">Meta-Learning · Reinforcement Learning · Diffusion Models · Natural Language Generation</p>
-        <nav class="links">
-          <a href="mailto:yunyenchuang@maxora.ai">Email</a>
-          <a href="https://github.com/KloudChuang">GitHub</a>
-          <a href="https://scholar.google.com/" rel="me">Google Scholar</a>
-          <a href="https://maxora.ai">Maxora&nbsp;AI</a>
-        </nav>
+      <p class="eyebrow reveal">Founder &amp; CEO @ <a href="https://maxora.ai">Maxora AI</a></p>
+      <h1 class="reveal">Yun-Yen<br/><span class="grad">Chuang</span></h1>
+      <p class="lede reveal">
+        Ph.D. @ National Taiwan University (EE). I design
+        <em>explorer–exploiter</em> systems that learn <em>how</em> to add noise,
+        schedule diffusion, and explore — instead of fixing it by hand.
+      </p>
+      <div class="hero-tags reveal">
+        <span>Meta-Learning</span>
+        <span>Diffusion Models</span>
+        <span>Reinforcement Learning</span>
+        <span>NLG</span>
       </div>
+      <a class="scroll-cue" href="#about" aria-label="Scroll down">
+        <span></span>
+      </a>
     </header>
 
-    <!-- About -->
-    <section>
-      <h2>About</h2>
-      <p>
-        I am the Founder &amp; CEO of <a href="https://maxora.ai">Maxora AI</a>, where I build
-        AI products and research-driven technology. I hold a Ph.D. in Electrical Engineering
-        from National Taiwan University.
-      </p>
-      <p>
-        My research applies novel deep-learning ideas — especially <strong>meta-learning</strong>
-        and <strong>exploration</strong> — to <strong>natural language generation</strong>,
-        bridging GANs, diffusion models, and meta reinforcement learning. A common thread in my
-        work is a <em>scheduler / explorer–exploiter</em> framework inspired by Meta Exploration
-        that learns <em>how</em> to sample or schedule noise rather than fixing it by hand.
-      </p>
+    <!-- ABOUT -->
+    <section id="about" class="sect">
+      <h2 class="reveal"><span class="num">01</span> About</h2>
+      <div class="about-grid">
+        <p class="reveal">
+          I am the Founder &amp; CEO of <a href="https://maxora.ai">Maxora AI</a>, building
+          AI products and research-driven technology. My research applies
+          <strong>meta-learning</strong> and <strong>exploration</strong> to
+          <strong>natural language generation</strong> — bridging GANs, diffusion
+          models, and meta reinforcement learning.
+        </p>
+        <p class="reveal">
+          A single idea threads through my work: a <em>scheduler / explorer–exploiter</em>
+          framework inspired by <strong>Meta&nbsp;Exploration</strong>. Rather than
+          hand-tuning how a model samples or schedules noise, I train a second network
+          to <em>learn</em> that policy — and let the generator focus on generation.
+        </p>
+      </div>
     </section>
 
-    <!-- Education -->
-    <section>
-      <h2>Education</h2>
-      <ul class="edu">
-        <li>
-          <span class="degree">Ph.D., Electrical Engineering</span>
-          <span class="inst">National Taiwan University</span>
-          <span class="detail">Speech Processing Lab · Advisor: Prof. Hung-yi Lee (李宏毅)</span>
-        </li>
-        <li>
-          <span class="degree">M.S., Engineering Science and Ocean Engineering</span>
-          <span class="inst">National Taiwan University</span>
-          <span class="detail">iCAN Lab · Advisor: Prof. Ray-I Chang (張瑞益)</span>
-        </li>
-      </ul>
+    <!-- RESEARCH / METHOD VISUALS -->
+    <section id="research" class="sect">
+      <h2 class="reveal"><span class="num">02</span> How my methods work</h2>
+
+      <!-- METHOD 1: Meta-DiffuB -->
+      <article class="method reveal">
+        <div class="method-head">
+          <div>
+            <span class="venue-pill">NeurIPS 2024</span>
+            <h3>Meta-DiffuB</h3>
+            <p class="method-sub">A contextualized seq2seq <strong>text diffusion</strong> model with <strong>meta-exploration</strong>.</p>
+          </div>
+          <a class="ghbtn" href="https://github.com/KloudChuang/neurips-meta-diffub">code ↗</a>
+        </div>
+
+        <p class="method-desc">
+          A fixed noise schedule treats every sentence the same. Meta-DiffuB trains a
+          <strong>Scheduler</strong> (the <em>meta-explorer</em>) that reads the context and
+          imposes a <strong>contextualized, per-step noise schedule</strong> on the diffusion
+          model (the <em>exploiter</em>). Generation quality becomes the reward that teaches the
+          scheduler <em>how</em> to noise.
+        </p>
+
+        <!-- Animated diagram -->
+        <div class="diagram diagram-diffub" aria-hidden="true">
+          <div class="lane scheduler">
+            <div class="chip chip-glow">Scheduler&nbsp;S<sub>ϕ</sub><small>meta-explorer</small></div>
+            <svg class="noise-curve" viewBox="0 0 220 60" preserveAspectRatio="none">
+              <path class="curve-track" d="M0,55 C60,55 60,8 110,8 S160,52 220,12" />
+              <path class="curve-flow" d="M0,55 C60,55 60,8 110,8 S160,52 220,12" />
+            </svg>
+            <span class="lane-label">contextualized noise β<sub>t</sub></span>
+          </div>
+
+          <div class="lane pipeline">
+            <div class="node src">Source<br/><b>x</b></div>
+            <div class="diff-track">
+              <span class="diff-label left">noise&nbsp;y<sub>T</sub></span>
+              <div class="steps">
+                <span class="step" style="--i:0"></span>
+                <span class="step" style="--i:1"></span>
+                <span class="step" style="--i:2"></span>
+                <span class="step" style="--i:3"></span>
+                <span class="step" style="--i:4"></span>
+                <span class="step" style="--i:5"></span>
+                <span class="flow-dot"></span>
+              </div>
+              <span class="diff-label right">clean&nbsp;y<sub>0</sub></span>
+            </div>
+            <div class="node tgt">Target<br/><b>ŷ</b></div>
+          </div>
+
+          <!-- live denoising text demo -->
+          <div class="denoise-demo">
+            <span class="demo-tag">reverse diffusion</span>
+            <span id="denoiseText" class="denoise-text">generating</span>
+          </div>
+
+          <div class="feedback">
+            <svg viewBox="0 0 600 40" preserveAspectRatio="none">
+              <path class="fb-track" d="M580,30 C580,5 20,5 20,30" />
+              <path class="fb-flow" d="M580,30 C580,5 20,5 20,30" />
+            </svg>
+            <span class="fb-label">generation quality → meta-exploration reward</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- METHOD 2: MetaEx-GAN -->
+      <article class="method reveal">
+        <div class="method-head">
+          <div>
+            <span class="venue-pill alt">IEEE/ACM TASLP</span>
+            <h3>MetaEx-GAN</h3>
+            <p class="method-sub"><strong>Meta exploration</strong> to improve NLG via <strong>GANs</strong>.</p>
+          </div>
+          <a class="ghbtn" href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN">code ↗</a>
+        </div>
+
+        <p class="method-desc">
+          GAN-based text generation collapses when rewards are sparse and exploration is poor.
+          MetaEx-GAN adds a <strong>Meta-Explorer</strong> that learns an exploration policy for
+          the <strong>Generator</strong>, while the <strong>Discriminator</strong>’s signal flows
+          back as reward — an explorer–exploiter loop that escapes mode collapse.
+        </p>
+
+        <!-- Animated GAN loop -->
+        <div class="diagram diagram-gan" aria-hidden="true">
+          <div class="explorer-row">
+            <div class="chip chip-glow">Meta-Explorer<small>learns exploration</small></div>
+          </div>
+
+          <div class="gan-loop">
+            <div class="gan-node gen">
+              <b>Generator</b><span>G<sub>θ</sub></span>
+            </div>
+
+            <div class="gan-flow forward">
+              <svg viewBox="0 0 180 60" preserveAspectRatio="none">
+                <path class="gan-track" d="M4,30 H176" />
+                <path class="gan-arrow-flow" d="M4,30 H176" />
+              </svg>
+              <span class="gan-flow-label">sampled tokens</span>
+              <span class="tok t1">w₁</span><span class="tok t2">w₂</span><span class="tok t3">w₃</span>
+            </div>
+
+            <div class="gan-node disc">
+              <b>Discriminator</b><span>D<sub>ψ</sub></span>
+            </div>
+
+            <div class="gan-flow reward">
+              <svg viewBox="0 0 360 70" preserveAspectRatio="none">
+                <path class="gan-track" d="M350,8 C350,55 10,55 10,18" />
+                <path class="gan-reward-flow" d="M350,8 C350,55 10,55 10,18" />
+              </svg>
+              <span class="gan-flow-label reward-label">reward → policy gradient</span>
+            </div>
+
+            <svg class="explore-inject" viewBox="0 0 120 50" preserveAspectRatio="none">
+              <path class="inject-track" d="M60,4 V46" />
+              <path class="inject-flow" d="M60,4 V46" />
+            </svg>
+          </div>
+        </div>
+      </article>
     </section>
 
-    <!-- Publications -->
-    <section>
-      <h2>Selected Publications</h2>
-      <ol class="pubs">
-        <li>
-          <p class="pub-title">Meta-DiffuB: A Contextualized Sequence-to-Sequence Text Diffusion Model with Meta-Exploration</p>
-          <p class="pub-meta"><span class="venue">NeurIPS 2024</span></p>
-          <p class="pub-links"><a href="https://github.com/KloudChuang/neurips-meta-diffub">code</a></p>
-        </li>
-        <li>
-          <p class="pub-title">MetaEx-GAN: Meta Exploration to Improve Natural Language Generation via Generative Adversarial Networks</p>
-          <p class="pub-meta"><span class="venue">IEEE/ACM Transactions on Audio, Speech, and Language Processing (TASLP)</span></p>
-          <p class="pub-links"><a href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN">code</a></p>
-        </li>
-      </ol>
+    <!-- EDUCATION -->
+    <section id="education" class="sect">
+      <h2 class="reveal"><span class="num">03</span> Education</h2>
+      <div class="timeline">
+        <div class="tl-item reveal">
+          <div class="tl-dot"></div>
+          <div class="tl-body">
+            <h4>Ph.D., Electrical Engineering</h4>
+            <p class="tl-inst">National Taiwan University</p>
+            <p class="tl-detail">Speech Processing Lab · Advisor: Prof. Hung-yi Lee (李宏毅)</p>
+          </div>
+        </div>
+        <div class="tl-item reveal">
+          <div class="tl-dot"></div>
+          <div class="tl-body">
+            <h4>M.S., Engineering Science &amp; Ocean Engineering</h4>
+            <p class="tl-inst">National Taiwan University</p>
+            <p class="tl-detail">iCAN Lab · Advisor: Prof. Ray-I Chang (張瑞益)</p>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- Research interests -->
-    <section>
-      <h2>Research Interests</h2>
-      <p class="tags">
-        <span>Meta-Learning</span>
-        <span>Reinforcement Learning</span>
-        <span>Adversarial Learning (GANs)</span>
-        <span>Diffusion Models</span>
-        <span>Natural Language Generation</span>
-      </p>
+    <!-- PUBLICATIONS -->
+    <section id="pubs" class="sect">
+      <h2 class="reveal"><span class="num">04</span> Selected Publications</h2>
+      <div class="pub-list">
+        <a class="pub-card reveal" href="https://github.com/KloudChuang/neurips-meta-diffub">
+          <span class="venue-pill">NeurIPS 2024</span>
+          <h3>Meta-DiffuB</h3>
+          <p>A Contextualized Sequence-to-Sequence Text Diffusion Model with Meta-Exploration</p>
+          <span class="pub-go">View code →</span>
+        </a>
+        <a class="pub-card reveal" href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN">
+          <span class="venue-pill alt">IEEE/ACM TASLP</span>
+          <h3>MetaEx-GAN</h3>
+          <p>Meta Exploration to Improve Natural Language Generation via Generative Adversarial Networks</p>
+          <span class="pub-go">View code →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="sect contact">
+      <h2 class="reveal"><span class="num">05</span> Get in touch</h2>
+      <p class="reveal contact-lede">Open to research collaborations, talks, and conversations about AI.</p>
+      <div class="contact-links reveal">
+        <a href="mailto:yunyenchuang@maxora.ai">yunyenchuang@maxora.ai</a>
+        <a href="https://github.com/KloudChuang">GitHub</a>
+        <a href="https://scholar.google.com/" rel="me">Google Scholar</a>
+        <a href="https://maxora.ai">Maxora AI</a>
+      </div>
     </section>
 
     <footer>
-      <p>© <span id="year">2026</span> Yun-Yen Chuang · <a href="mailto:yunyenchuang@maxora.ai">yunyenchuang@maxora.ai</a></p>
+      <p>© <span id="year">2026</span> Yun-Yen Chuang</p>
     </footer>
   </main>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
