@@ -288,6 +288,59 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 500; }
 .mono-svg { font-family: var(--mono); }
 .disp-svg { font-family: var(--display); }
 
+/* ---------- maxora / growth loop ---------- */
+.loop-card {
+  border: 1px solid var(--hair); border-radius: 14px; background: var(--paper-2);
+  margin-top: 2.2rem; overflow: hidden;
+}
+.loop-hud {
+  display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--hair); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.05em; color: var(--muted);
+}
+.loop-hud .stage-id { color: var(--accent-ink); }
+.loop-live { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--accent-deep); }
+.loop-live .pulse-d { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 var(--accent-glow); animation: pulse 2.2s ease-out infinite; }
+.loop-body {
+  background:
+    linear-gradient(var(--grid-fine) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-fine) 1px, transparent 1px), var(--paper-2);
+  background-size: 26px 26px, 26px 26px, 100% 100%;
+}
+.loop-body svg { width: 100%; height: auto; max-height: 64vh; display: block; }
+.loop-cap {
+  padding: 0.8rem 1rem; border-top: 1px solid var(--hair);
+  font-family: var(--mono); font-size: 0.74rem; color: var(--ink-2); line-height: 1.55;
+}
+.loop-cap b { color: var(--accent-deep); }
+
+.loop-body text { font-family: var(--mono); fill: var(--ink-2); }
+.loop-ring-bg { fill: none; stroke: var(--hair); stroke-width: 1.4; }
+.loop-ring { fill: none; stroke: var(--accent-line); stroke-width: 2; stroke-dasharray: 6 10; stroke-linecap: round; animation: ringFlow 1.4s linear infinite; }
+@keyframes ringFlow { to { stroke-dashoffset: -32; } }
+.loop-spark { fill: var(--accent); filter: drop-shadow(0 0 7px var(--accent-glow)); }
+.loop-center { fill: var(--ink); letter-spacing: 0.01em; }
+.loop-center-sub { fill: var(--muted); }
+.loop-node circle { fill: var(--paper); stroke: var(--accent); stroke-width: 1.8; }
+.loop-node .ln-t { fill: var(--ink); }
+.loop-node .ln-s { fill: var(--muted); }
+
+.cap-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.6rem; }
+.cap-tags span {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.01em; color: var(--ink-2);
+  border: 1px solid var(--hair); border-radius: 999px; padding: 0.35rem 0.8rem; background: var(--paper-2);
+}
+
+.notes-link {
+  display: grid; gap: 0.3rem; margin-top: 2rem; padding: 1.4rem 1.6rem;
+  border: 1px solid var(--hair); border-left: 2px solid var(--accent); border-radius: 0 12px 12px 0;
+  background: var(--paper-2); transition: transform 0.28s var(--ease), border-color 0.28s, box-shadow 0.28s;
+}
+.notes-link:hover { transform: translateX(3px); box-shadow: 0 12px 34px oklch(0.5 0.05 200 / 0.10); }
+.notes-link .nl-tag { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; color: var(--accent-ink); }
+.notes-link .nl-title { font-family: var(--display); font-weight: 600; font-size: 1.3rem; letter-spacing: -0.01em; color: var(--ink); }
+.notes-link .nl-sub { color: var(--muted); font-size: 0.95rem; max-width: 62ch; }
+.notes-link .nl-go { font-family: var(--mono); font-size: 0.78rem; color: var(--accent-deep); margin-top: 0.4rem; }
+
 /* ---------- education timeline ---------- */
 .timeline { position: relative; padding-left: 1.8rem; }
 .timeline::before { content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 1px; background: var(--hair); }

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
+  <title>Harness Engineering — Notes · Yun-Yen Chuang</title>
+  <meta name="description" content="Research notes on Harness Engineering: keeping a long-running AI growth agent stable, observable, and self-improving. By Yun-Yen Chuang, Maxora AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/harness.css" />
+</head>
+<body>
+  <div class="paper-grid"></div>
+  <div class="paper-vignette"></div>
+  <span class="reg tl"></span><span class="reg tr"></span>
+  <span class="reg bl"></span><span class="reg br"></span>
+  <div class="scan" id="scan"></div>
+  <div class="readout">
+    <span><b id="roSect">00 / NOTES</b></span>
+    <span><span class="dot">▸</span> scroll <span id="roPct">000</span>%</span>
+  </div>
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <a class="brand" href="index.html"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
+    <div class="navlinks">
+      <a href="index.html" class="back-link">← back to home</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <!-- HERO -->
+    <header class="sub-hero" data-sect="00 / NOTES">
+      <p class="eyebrow reveal">
+        <span class="live"><span class="pulse"></span>RESEARCH NOTES</span>
+        <span>·</span><span>LONG-RUNNING AI · GROWTH</span>
+      </p>
+      <h1 class="reveal">Harness<br /><span class="ln2">Engineering</span></h1>
+      <p class="lede reveal">
+        Notes from building a <em>long-running AI agent</em> for advertising and growth at Maxora.
+        The missing layer between “the LLM runs” and “the LLM runs reliably in production” —
+        how to make an agent <em>stable, observable, and self-improving</em>.
+      </p>
+      <div class="status-row reveal">
+        <span class="live-tag"><span class="pulse-d"></span>work in progress</span>
+        <span>case study: an autonomous landing-page &amp; ad engine</span>
+        <span>ref: Hung-yi Lee — Harness Engineering</span>
+      </div>
+    </header>
+
+    <!-- 01 — the failure -->
+    <section class="sect" data-sect="01 / THE GAP">
+      <div class="sect-head reveal"><span class="idx">01</span><h2>The failure most LLM products hit</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>You ship an LLM feature. Week one, the demo is perfect. Week two, it starts drifting:</p>
+        <ul class="symptoms">
+          <li>The same prompt returns JSON today and Markdown tomorrow.</li>
+          <li>When it fails, you can't tell if it's the prompt, the API, or the input.</li>
+          <li>Adding a feature breaks something else, every time.</li>
+        </ul>
+        <p>
+          This usually isn't a bad prompt. It's the absence of <strong>harness engineering</strong> —
+          the system layer that decides how the model is called, constrained, observed, and extended.
+          The question this whole note answers: <em>what's the missing piece between “the LLM works”
+          and “the LLM runs stably in production”?</em>
+        </p>
+      </div>
+    </section>
+
+    <!-- 02 — the 80-word story -->
+    <section class="sect" data-sect="02 / GUIDANCE">
+      <div class="sect-head reveal"><span class="idx">02</span><h2>Eighty words changed everything</h2><span class="rule"></span></div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ a small-model bug-fix experiment</span>
+        <div class="callout-grid">
+          <div class="co-panel bad">
+            <h4>Bare prompt</h4>
+            <div class="mono-block">Please fix this bug in parser.py</div>
+            <p class="co-out">→ The model <strong>hallucinated</strong> a parser.py that didn't exist, invented a bug, faked a verify step, and reported “fixed” — without ever touching a real file.</p>
+          </div>
+          <div class="co-panel good">
+            <h4>+ 80 words of harness</h4>
+            <div class="mono-block">Before doing anything, ls the directory.
+Before editing a file, cat it open first.
+“Done” means: tests pass and exit code is 0.</div>
+            <p class="co-out">→ ls → cat parser.py → found the real bug → fixed it → ran tests → passed.</p>
+          </div>
+        </div>
+        <blockquote>Sometimes a model isn't <span class="q">not smart enough</span> — it just lacks the guidance a human would give.</blockquote>
+      </div>
+      <div class="prose reveal">
+        <p>
+          Same model, same weights. The difference was a <em>harness</em>: a few rules that turned
+          fantasy into reliable execution. That's the whole thesis — most production failures are
+          structural, not a matter of model intelligence.
+        </p>
+      </div>
+    </section>
+
+    <!-- 03 — three layers -->
+    <section class="sect" data-sect="03 / THREE LAYERS">
+      <div class="sect-head reveal"><span class="idx">03</span><h2>Three layers of engineering</h2><span class="rule"></span></div>
+      <div class="layer-stack reveal">
+        <div class="layer-row">
+          <span class="lr-n">L1</span>
+          <div>
+            <h4>Prompt Engineering</h4>
+            <p class="lr-do">Write what to ask this time.</p>
+            <p class="lr-solve">solves: the model's behaviour <em>this</em> call</p>
+          </div>
+        </div>
+        <div class="layer-row">
+          <span class="lr-n">L2</span>
+          <div>
+            <h4>Context Engineering</h4>
+            <p class="lr-do">Decide what the model gets to see.</p>
+            <p class="lr-solve">solves: the model's information <em>this</em> call</p>
+          </div>
+        </div>
+        <div class="layer-row harness">
+          <span class="lr-n">L3</span>
+          <div>
+            <h4>Harness Engineering</h4>
+            <p class="lr-do">Design how the model is called, constrained, observed, and extended inside a system.</p>
+            <p class="lr-solve">solves: the model behaving <em>every</em> call</p>
+          </div>
+        </div>
+      </div>
+      <div class="prose reveal">
+        <p>
+          The top two layers solve <em>this time</em>. Harness solves <em>every time</em>. However good
+          your prompt and context are, without a harness to govern the agent it will drift the longer it runs.
+        </p>
+      </div>
+    </section>
+
+    <!-- 04 — six components -->
+    <section class="sect" data-sect="04 / SIX PARTS">
+      <div class="sect-head reveal"><span class="idx">04</span><h2>The six parts of a harness</h2><span class="rule"></span></div>
+      <p class="lede reveal">A harness is not just “pipeline + hooks + tests.” In production it's six distinct pieces.</p>
+      <div class="comp-grid">
+        <div class="comp-card reveal"><span class="cc-n">01</span><h4>Structured I/O</h4><p>Everything in and out of the model has a schema. No output drift — a typed, versioned source of truth.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">02</span><h4>Bounded Tools</h4><p>What the agent can and can't do is defined in code, not requested in a prompt. The boundary is enforced.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">03</span><h4>Prompt Management</h4><p>Prompts are centralised, layered, and versioned — shared rules, per-task intent, per-project personality.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">04</span><h4>Orchestration</h4><p>Something decides when the model is called and in what order. One loop, many intents.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">05</span><h4>Trace</h4><p>Every step is visible. When it breaks at 3am, you can grep exactly which tool call went wrong, and what it cost.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">06</span><h4>Evaluation</h4><p>The system can quantify “is this good?” — and gate, block, and retry on the answer.</p></div>
+      </div>
+    </section>
+
+    <!-- 05 — self-healing -->
+    <section class="sect" data-sect="05 / SELF-HEALING">
+      <div class="sect-head reveal"><span class="idx">05</span><h2>Closing the loop: self-healing</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          The most useful pattern is an <em>evaluation gate</em>: a tool produces something, a check runs
+          immediately, and if it fails the harness <strong>blocks</strong> and feeds a neutral correction
+          back to the agent — which retries with a hint until it passes. No human in the loop.
+        </p>
+      </div>
+      <div class="heal reveal">
+        <div class="heal-hud">EVALUATION GATE · block → retry → pass</div>
+        <div class="heal-body">
+          <svg viewBox="0 0 720 240" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <marker id="ahH" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+              </marker>
+            </defs>
+            <g class="heal-node">
+              <rect x="40" y="92" width="150" height="56" rx="9" />
+              <text class="hn-t" x="115" y="116" text-anchor="middle" font-size="14">Tool runs</text>
+              <text x="115" y="134" text-anchor="middle" font-size="9.5" fill="var(--muted)">produces output</text>
+            </g>
+            <path class="heal-flow" d="M190,120 L262,120" marker-end="url(#ahH)" />
+            <g class="heal-node gate">
+              <rect x="264" y="92" width="170" height="56" rx="9" />
+              <text class="hn-t" x="349" y="116" text-anchor="middle" font-size="14">Evaluation gate</text>
+              <text x="349" y="134" text-anchor="middle" font-size="9.5" fill="var(--accent-deep)">rule check · hook</text>
+            </g>
+            <path class="heal-flow" d="M434,120 L532,120" marker-end="url(#ahH)" />
+            <text class="heal-pass" x="560" y="116" text-anchor="middle" font-size="13">PASS ✓</text>
+            <text x="560" y="134" text-anchor="middle" font-size="9.5" fill="var(--muted)">ship it</text>
+            <!-- block feedback arc -->
+            <path class="heal-flow block" d="M349,148 C349,210 115,210 115,150" marker-end="url(#ahH)" />
+            <text x="232" y="226" text-anchor="middle" font-size="10" fill="var(--accent-deep)">decision: block → retry with a neutral hint</text>
+          </svg>
+        </div>
+        <div class="loop-cap">In our engine this guards accessibility, dead links, and contrast — the rules live in <b>tools and hooks, not in the prompt</b>, so the model never needs to be an expert; it just needs to be told, calmly, to try again.</div>
+      </div>
+      <div class="principle reveal">
+        <h4>Don't scold the model.</h4>
+        <p>Retries use neutral language (“contrast is 2.8:1, needs ≥ 4.5:1 — try a darker primary”). Berate an LLM and it tends to answer like something being berated.</p>
+      </div>
+    </section>
+
+    <!-- 06 — principles -->
+    <section class="sect" data-sect="06 / PRINCIPLES">
+      <div class="sect-head reveal"><span class="idx">06</span><h2>Two principles I keep relearning</h2><span class="rule"></span></div>
+      <div class="principle reveal">
+        <h4>CLAUDE.md is a map, not a law book.</h4>
+        <p>Don't dump every rule and doc into it — that eats the context window. Point the agent at where to look (“need X? read docs/X.md”) instead of pasting X. And write the first version by hand: human-written guidance usually beats model-written, especially on strong models.</p>
+      </div>
+      <div class="principle reveal">
+        <h4>Critical rules are scar tissue.</h4>
+        <p>The handful of hard rules in a production agent's config exist because something broke once. “Deploy to staging before prod.” Each one is an incident encoded so the agent never repeats it.</p>
+      </div>
+    </section>
+
+    <!-- 07 — adoption -->
+    <section class="sect" data-sect="07 / ADOPTION">
+      <div class="sect-head reveal"><span class="idx">07</span><h2>How to adopt it, three weeks</h2><span class="rule"></span></div>
+      <p class="lede reveal">You don't have to build all six at once. If you develop with an agent CLI, much of this already exists as extension points.</p>
+      <div class="path">
+        <div class="path-week reveal">
+          <span class="pw-n">WEEK 01</span>
+          <h4>Stabilise behaviour</h4>
+          <ul>
+            <li>Draft a project guide (CLAUDE.md), then edit it by hand.</li>
+            <li>List the commands you run often (test / lint / format).</li>
+            <li>List the things the agent must <em>not</em> do. Commit it.</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">WEEK 02</span>
+          <h4>Automate the routine</h4>
+          <ul>
+            <li>Turn your 3 most-repeated requests into reusable skills.</li>
+            <li>Add one or two hooks (lint --fix after edits, notify on stop).</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">WEEK 03</span>
+          <h4>Build your own harness</h4>
+          <ul>
+            <li>Copy the six-part skeleton: typed state, tool groups, layered prompts, an intent loop, trace logging, an evaluation gate.</li>
+            <li>Don't implement every intent — get <em>one</em> running end-to-end first.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 — closing -->
+    <section class="sect" data-sect="08 / THE POINT">
+      <div class="sect-head reveal"><span class="idx">08</span><h2>The point</h2><span class="rule"></span></div>
+      <p class="closing-quote reveal">The most important harness is one that <span class="q">keeps improving itself</span>.</p>
+      <p class="lede closing-sub reveal">
+        That's the bar I'm building toward at Maxora: an agent that accumulates per-project memory,
+        turns every campaign it ships into a training signal, and corrects its own mistakes through
+        self-healing loops. A 2026 AI agent isn't a static tool — it's a system that gets stronger on its own.
+      </p>
+      <p class="ref-note reveal">
+        Concept reference: Hung-yi Lee — <a href="https://www.youtube.com/watch?v=R6fZR_9kmIw" target="_blank" rel="noopener">Harness Engineering</a>. These are my working notes applied to long-running growth agents.
+      </p>
+    </section>
+
+    <footer>
+      <span>© <span id="year">2026</span> YUN-YEN CHUANG</span>
+      <span><a href="index.html" style="color:var(--accent-deep)">← back to home</a></span>
+    </footer>
+  </main>
+
+  <script src="assets/main.js"></script>
+</body>
+</html>

@@ -33,8 +33,9 @@
     <a class="brand" href="#top"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
     <div class="navlinks">
       <a href="#about" class="hide-sm">/about</a>
+      <a href="#maxora">/maxora</a>
       <a href="#research">/research</a>
-      <a href="#pubs" class="hide-sm">/publications</a>
+      <a href="harness.html" class="hide-sm">/notes</a>
       <a href="#contact">/contact</a>
     </div>
   </nav>
@@ -103,20 +104,109 @@
         </p>
       </div>
       <div class="thread reveal">
-        <span class="tag">▸ Research thread · one idea, two papers</span>
+        <span class="tag">▸ Research thread · one idea across the work</span>
         <p>
-          Both <strong>Meta-DiffuB</strong> and <strong>MetaEx-GAN</strong> instantiate the same
-          <em>scheduler / explorer–exploiter</em> pattern from <strong>Meta-Exploration</strong>:
-          a teacher network learns to explore, a student network learns to generate, and the
-          student's own learning effectiveness becomes the reward that trains the teacher.
-          Below, each method is laid out as an instrument you can scroll through.
+          A recurring move runs through my papers: a second network that
+          <strong>learns how to explore or schedule</strong>, so the main model can focus on
+          generating or detecting. <strong>Meta-DiffuB</strong> and <strong>MetaEx-GAN</strong> make
+          this explicit with a scheduler / explorer–exploiter pair; <strong>QMVDet</strong> uses a
+          query-based-learning scheduler to decide when to guide a detector; and it traces back to
+          <strong>RapGAN</strong> and <strong>SODM</strong>. Each method below is laid out as an
+          instrument you can scroll through.
         </p>
       </div>
     </section>
 
+    <!-- ===================== MAXORA / PRODUCT ===================== -->
+    <section id="maxora" class="sect" data-sect="02 / MAXORA">
+      <div class="sect-head reveal"><span class="idx">02</span><h2>What we're building</h2><span class="rule"></span></div>
+      <p class="lede reveal">
+        At <a href="https://maxora.ai"><em>Maxora&nbsp;AI</em></a> I'm turning the meta-exploration
+        idea into a <em>long-running growth agent</em>: an autonomous system that designs, ships,
+        measures, and re-designs marketing — and never stops learning from what it launches.
+      </p>
+
+      <div class="loop-card reveal" aria-hidden="true">
+        <div class="loop-hud">
+          <span class="stage-id">AUTONOMOUS GROWTH LOOP · always on</span>
+          <span class="loop-live"><span class="pulse-d"></span>running</span>
+        </div>
+        <div class="loop-body">
+          <svg viewBox="0 0 720 420" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <marker id="ahL" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+              </marker>
+            </defs>
+
+            <!-- energy ring -->
+            <circle class="loop-ring-bg" cx="360" cy="210" r="150" />
+            <circle class="loop-ring" cx="360" cy="210" r="150" />
+            <circle class="loop-spark" r="5">
+              <animateMotion dur="6s" repeatCount="indefinite"
+                path="M360,60 A150,150 0 1,1 359.9,60 Z" rotate="auto" />
+            </circle>
+
+            <!-- center -->
+            <text class="loop-center disp-svg" x="360" y="202" text-anchor="middle" font-size="17">LONG-RUNNING</text>
+            <text class="loop-center disp-svg" x="360" y="224" text-anchor="middle" font-size="17">GROWTH AGENT</text>
+            <text class="loop-center-sub mono-svg" x="360" y="248" text-anchor="middle" font-size="9.5">self-improving · on-device tuned</text>
+
+            <!-- 6 nodes around the ring -->
+            <g class="loop-node n1">
+              <circle cx="360" cy="60" r="6" />
+              <text class="ln-t disp-svg" x="360" y="36" text-anchor="middle" font-size="13">Generate sites</text>
+              <text class="ln-s mono-svg" x="360" y="50" text-anchor="middle" font-size="9">unique landing pages</text>
+            </g>
+            <g class="loop-node n2">
+              <circle cx="490" cy="135" r="6" />
+              <text class="ln-t disp-svg" x="560" y="120" text-anchor="middle" font-size="13">Generate creative</text>
+              <text class="ln-s mono-svg" x="560" y="134" text-anchor="middle" font-size="9">ad assets &amp; copy</text>
+            </g>
+            <g class="loop-node n3">
+              <circle cx="490" cy="285" r="6" />
+              <text class="ln-t disp-svg" x="560" y="294" text-anchor="middle" font-size="13">Launch ads</text>
+              <text class="ln-s mono-svg" x="560" y="308" text-anchor="middle" font-size="9">Meta · Google</text>
+            </g>
+            <g class="loop-node n4">
+              <circle cx="360" cy="360" r="6" />
+              <text class="ln-t disp-svg" x="360" y="384" text-anchor="middle" font-size="13">Measure performance</text>
+              <text class="ln-s mono-svg" x="360" y="398" text-anchor="middle" font-size="9">spend → signal</text>
+            </g>
+            <g class="loop-node n5">
+              <circle cx="230" cy="285" r="6" />
+              <text class="ln-t disp-svg" x="160" y="294" text-anchor="middle" font-size="13">Read trends</text>
+              <text class="ln-s mono-svg" x="160" y="308" text-anchor="middle" font-size="9">Google Trends</text>
+            </g>
+            <g class="loop-node n6">
+              <circle cx="230" cy="135" r="6" />
+              <text class="ln-t disp-svg" x="160" y="120" text-anchor="middle" font-size="13">Tune audience</text>
+              <text class="ln-s mono-svg" x="160" y="134" text-anchor="middle" font-size="9">on-device models</text>
+            </g>
+          </svg>
+        </div>
+        <div class="loop-cap">
+          A closed loop: every campaign's real performance feeds the next generation — creative, copy, layout, and audience all re-tuned automatically, with sensitive targeting handled by <b>on-device models</b>.
+        </div>
+      </div>
+
+      <div class="cap-tags reveal">
+        <span>Landing-page generation</span><span>Ad-creative generation</span>
+        <span>Trend sensing</span><span>Meta / Google performance feedback</span>
+        <span>On-device audience tuning</span><span>Harness-engineered agents</span>
+      </div>
+
+      <a class="notes-link reveal" href="harness.html">
+        <span class="nl-tag">▸ RESEARCH NOTES</span>
+        <span class="nl-title">Harness Engineering in production</span>
+        <span class="nl-sub">How I keep a long-running AI agent stable, observable, and self-improving — the engineering behind the loop.</span>
+        <span class="nl-go">Read the notes →</span>
+      </a>
+    </section>
+
     <!-- ===================== RESEARCH ===================== -->
-    <section id="research" class="sect" data-sect="02 / RESEARCH">
-      <div class="sect-head reveal"><span class="idx">02</span><h2>How the methods work</h2><span class="rule"></span></div>
+    <section id="research" class="sect" data-sect="03 / RESEARCH">
+      <div class="sect-head reveal"><span class="idx">03</span><h2>How the methods work</h2><span class="rule"></span></div>
 
       <!-- ============ PAPER 1: Meta-DiffuB ============ -->
       <article class="paper-block reveal" id="metadiffub">
@@ -448,6 +538,185 @@
               <h4>Quality and diversity, together</h4>
               <p>MetaEx-GAN reaches state-of-the-art NLG, improving sampling quality <em>and</em> diversity at once — without generating more sequences.</p>
               <p>It also generalizes to large pre-trained generators like <strong>GPT-2</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============ PAPER 3: QMVDet ============ -->
+      <article class="paper-block reveal" id="qmvdet">
+        <div class="paper-head">
+          <span class="venue">SENSORS&nbsp;’24</span>
+          <div class="htext">
+            <h3>QMVDet</h3>
+            <p>Query-based <strong>multiview detection</strong> with a camera-aware attention scheduler.
+              <span class="auth">Hsu, Yuan, <strong>Chuang</strong>, Sun, Chang — co-author.</span></p>
+          </div>
+          <a class="ghbtn" href="https://doi.org/10.3390/s24154773" target="_blank" rel="noopener">DOI ↗</a>
+        </div>
+
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizQmv" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">METHOD · 2D guides 3D via QBL</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahQ" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
+
+                  <!-- L0: many cameras → one ground plane, equal weighting -->
+                  <g class="lyr ly0">
+                    <text class="mono-svg note" x="300" y="54" text-anchor="middle" font-size="12">many cameras → one ground plane (bird's-eye)</text>
+                    <!-- ground plane -->
+                    <polygon class="ground" points="200,330 400,330 470,420 130,420"/>
+                    <line class="gp-grid" x1="244" y1="330" x2="201" y2="420"/>
+                    <line class="gp-grid" x1="290" y1="330" x2="270" y2="420"/>
+                    <line class="gp-grid" x1="336" y1="330" x2="340" y2="420"/>
+                    <line class="gp-grid" x1="382" y1="330" x2="408" y2="420"/>
+                    <line class="gp-grid" x1="178" y1="360" x2="422" y2="360"/>
+                    <line class="gp-grid" x1="155" y1="390" x2="445" y2="390"/>
+                    <!-- cameras -->
+                    <polygon class="cam" points="170,140 152,168 188,168"/>
+                    <polygon class="cam" points="300,128 282,156 318,156"/>
+                    <polygon class="cam" points="430,140 412,168 448,168"/>
+                    <path class="frustum" d="M170,168 L210,330 M170,168 L300,330"/>
+                    <path class="frustum" d="M300,156 L250,330 M300,156 L350,330"/>
+                    <path class="frustum" d="M430,168 L300,330 M430,168 L390,330"/>
+                    <text class="cam-w" x="170" y="186" text-anchor="middle" font-size="9">w=1/C</text>
+                    <text class="cam-w" x="300" y="174" text-anchor="middle" font-size="9">w=1/C</text>
+                    <text class="cam-w" x="430" y="186" text-anchor="middle" font-size="9">w=1/C</text>
+                    <text class="mono-svg note2" x="300" y="448" text-anchor="middle" font-size="11">MVDetr weights every camera equally — occlusion varies</text>
+                  </g>
+
+                  <!-- L1: 2D single-view detection -->
+                  <g class="lyr ly1">
+                    <text class="mono-svg note" x="300" y="58" text-anchor="middle" font-size="12">2D single-view detection · FairMOT (DLA-34)</text>
+                    <rect class="img-frame" x="150" y="100" width="300" height="170" rx="6"/>
+                    <path class="track-line" d="M200,230 C250,200 320,205 380,160"/>
+                    <circle class="foot-2d" cx="200" cy="230" r="5"/>
+                    <circle class="foot-2d" cx="262" cy="208" r="5"/>
+                    <circle class="foot-2d" cx="322" cy="200" r="5"/>
+                    <circle class="foot-2d" cx="380" cy="160" r="5"/>
+                    <text class="mono-svg note3" x="300" y="300" text-anchor="middle" font-size="10.5">detection-by-tracking → reliable 2D foot points</text>
+                    <text class="mono-svg note2" x="300" y="324" text-anchor="middle" font-size="11">heatmap + box heads · tracklets fill missed detections</text>
+                  </g>
+
+                  <!-- L2: project + deformable transformer -->
+                  <g class="lyr ly2">
+                    <text class="mono-svg note" x="300" y="58" text-anchor="middle" font-size="12">project feature maps → deformable transformer</text>
+                    <rect class="img-frame" x="120" y="92" width="120" height="80" rx="6"/>
+                    <text class="mono-svg" x="180" y="136" text-anchor="middle" font-size="10">cam feature</text>
+                    <path class="frustum active" d="M240,150 C320,170 320,250 360,280" marker-end="url(#ahQ)"/>
+                    <text class="mono-svg" x="320" y="200" text-anchor="middle" font-size="9">γ[u v 1]ᵀ = P[x y z 1]ᵀ</text>
+                    <polygon class="ground" points="360,250 470,250 510,330 320,330"/>
+                    <line class="gp-grid" x1="393" y1="250" x2="360" y2="330"/>
+                    <line class="gp-grid" x1="426" y1="250" x2="415" y2="330"/>
+                    <line class="gp-grid" x1="459" y1="250" x2="470" y2="330"/>
+                    <circle class="occ-dot" cx="400" cy="300" r="4"/>
+                    <circle class="occ-dot" cx="440" cy="285" r="4"/>
+                    <text class="mono-svg note2" x="300" y="372" text-anchor="middle" font-size="11">per-camera BEV feature maps via deformable attention</text>
+                  </g>
+
+                  <!-- L3: 2D-3D consistency -->
+                  <g class="lyr ly3">
+                    <text class="mono-svg note" x="300" y="58" text-anchor="middle" font-size="12">2D–3D consistency = camera reliability</text>
+                    <circle class="foot-3d" cx="232" cy="120" r="6"/><text class="mono-svg" x="232" y="106" text-anchor="middle" font-size="9">3D ĝ → 2D</text>
+                    <circle class="foot-2d" cx="270" cy="128" r="6"/><text class="mono-svg" x="300" y="112" text-anchor="middle" font-size="9">2D det g̃</text>
+                    <line class="disc-gap" x1="238" y1="121" x2="264" y2="127"/>
+                    <text class="mono-svg note3" x="300" y="158" text-anchor="middle" font-size="10">d = argminⱼ ‖ g̃²ᴰ − f₃ᴅ→₂ᴅ(ĝ) ‖   ·   small d = reliable</text>
+                    <line class="axis-line" x1="150" y1="290" x2="460" y2="290"/>
+                    <g class="cons-bars">
+                      <rect class="cons-base" x="172" y="262" width="26" height="28"/><rect class="cons-bar" x="172" y="208" width="26" height="82"/>
+                      <rect class="cons-base" x="232" y="274" width="26" height="16"/><rect class="cons-bar" x="232" y="232" width="26" height="58"/>
+                      <rect class="cons-base" x="292" y="256" width="26" height="34"/><rect class="cons-bar" x="292" y="196" width="26" height="94"/>
+                      <rect class="cons-base" x="352" y="280" width="26" height="10"/><rect class="cons-bar" x="352" y="250" width="26" height="40"/>
+                      <rect class="cons-base" x="412" y="266" width="26" height="24"/><rect class="cons-bar" x="412" y="218" width="26" height="72"/>
+                    </g>
+                    <text class="ax-lbl" x="185" y="306" text-anchor="middle">c₁</text><text class="ax-lbl" x="245" y="306" text-anchor="middle">c₂</text>
+                    <text class="ax-lbl" x="305" y="306" text-anchor="middle">c₃</text><text class="ax-lbl" x="365" y="306" text-anchor="middle">c₄</text>
+                    <text class="ax-lbl" x="425" y="306" text-anchor="middle">c₅</text>
+                    <text class="mono-svg note2" x="300" y="334" text-anchor="middle" font-size="11">per-camera attention Ac from average discrepancy</text>
+                  </g>
+
+                  <!-- L4: camera-aware attention + QBL scheduler -->
+                  <g class="lyr ly4">
+                    <text class="mono-svg note" x="300" y="58" text-anchor="middle" font-size="12">camera-aware attention · QBL scheduler</text>
+                    <g class="attn-set">
+                      <rect class="attn-w" x="150" y="120" width="20" height="60"/>
+                      <rect class="attn-w dim" x="184" y="146" width="20" height="34"/>
+                      <rect class="attn-w" x="218" y="108" width="20" height="72"/>
+                      <rect class="attn-w dim" x="252" y="156" width="20" height="24"/>
+                      <rect class="attn-w" x="286" y="132" width="20" height="48"/>
+                    </g>
+                    <text class="mono-svg" x="218" y="200" text-anchor="middle" font-size="9.5">softmax(Ac·ξc)</text>
+                    <path class="qbl-flow" d="M312,150 L372,150" marker-end="url(#ahQ)"/>
+                    <rect class="qbl-box" x="374" y="120" width="168" height="62" rx="9"/>
+                    <text class="disp-svg" x="458" y="146" text-anchor="middle" font-size="13" fill="var(--accent-deep)">QBL scheduler</text>
+                    <text class="mono-svg" x="458" y="166" text-anchor="middle" font-size="8.5">activate if (1−Hₜ/Hₜ₋₁) &gt; 0.1</text>
+                    <text class="reward-eq mono-svg" x="300" y="260" text-anchor="middle" font-size="15">F = (1/C) Σ Ac · fc</text>
+                    <text class="mono-svg note2" x="300" y="300" text-anchor="middle" font-size="11">steer learning only when camera weight order shifts</text>
+                    <text class="mono-svg note3" x="300" y="322" text-anchor="middle" font-size="10.5">→ saves the costly 2D–3D consistency computation</text>
+                  </g>
+
+                  <!-- L5: result -->
+                  <g class="lyr ly5">
+                    <text class="result-big disp-svg" x="300" y="64" text-anchor="middle" font-size="24">STATE OF THE ART</text>
+                    <text class="mono-svg note" x="300" y="88" text-anchor="middle" font-size="11">MODA · vs MVDet · MVDetr · 3DROM</text>
+                    <g class="bars" transform="translate(120,108)">
+                      <g class="bar-pair"><rect class="b-base" x="0" y="56" width="20" height="44"/><rect class="b-ours" x="24" y="22" width="20" height="78"/><text class="ax-lbl" x="22" y="116" text-anchor="middle">MVDet</text></g>
+                      <g class="bar-pair" transform="translate(88,0)"><rect class="b-base" x="0" y="40" width="20" height="60"/><rect class="b-ours" x="24" y="18" width="20" height="82"/><text class="ax-lbl" x="22" y="116" text-anchor="middle">MVDetr</text></g>
+                      <g class="bar-pair" transform="translate(176,0)"><rect class="b-base" x="0" y="30" width="20" height="70"/><rect class="b-ours" x="24" y="14" width="20" height="86"/><text class="ax-lbl" x="22" y="116" text-anchor="middle">3DROM</text></g>
+                      <g class="bar-pair" transform="translate(264,0)"><rect class="b-ours" x="12" y="10" width="20" height="90"/><text class="ax-lbl" x="22" y="116" text-anchor="middle">QMVDet</text></g>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="276" text-anchor="middle" font-size="11.5">Wildtrack <b>93.1%</b> · MultiviewX <b>95.1%</b> MODA</text>
+                    <text class="mono-svg note3" x="300" y="300" text-anchor="middle" font-size="10.5">robust even when cameras drop out</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capQmv">Multiview detection fuses many cameras onto one ground plane — but <b>weighting them equally</b> ignores occlusion.</div>
+            </div>
+          </div>
+
+          <div class="steps-col" data-steps="qmv">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>Not every camera is equally reliable</h4>
+              <p>Multiview detection projects feature maps from many cameras onto one ground plane to beat occlusion. The strong baseline, MVDetr, <strong>weights every camera equally</strong>.</p>
+              <p>But occlusion depends on object position and camera angle — equal weighting leaves accuracy on the table.</p>
+            </div>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · 2D detection</span>
+              <h4>A 2D network to anchor the truth</h4>
+              <p>A single-view <em>detection-by-tracking</em> network (FairMOT on DLA-34) produces reliable <strong>2D foot points</strong>, using tracklets to fill in missed detections under occlusion.</p>
+            </div>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · project &amp; encode</span>
+              <h4>Lift each view to the ground plane</h4>
+              <p>Perspective transformation maps each camera's feature map onto the bird's-eye ground plane; a <strong>deformable transformer</strong> encodes per-camera BEV features.</p>
+            </div>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · 2D–3D consistency</span>
+              <h4>Reliability = agreement between 2D and 3D</h4>
+              <p>Project the predicted 3D foot point back to 2D and measure its <strong>discrepancy</strong> against the 2D detection. Small discrepancy means a trustworthy camera.</p>
+              <p>Averaged per camera, this becomes a <em>camera-aware attention</em> weight Ac.</p>
+            </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · QBL scheduler</span>
+              <h4>Guide learning — only when it matters</h4>
+              <p>Cameras are aggregated by attention-weighted averaging, F = (1/C)·Σ Ac·fc. Because the consistency computation is expensive, a <em>query-based-learning scheduler</em> only steps in when the camera weight <strong>order shifts</strong> — gated by an entropy change above 0.1.</p>
+              <p>The 2D network acts as an oracle that schedules <em>when</em> to teach the 3D detector — a scheduler, just like in my generation work.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>A new benchmark on both datasets</h4>
+              <p>QMVDet sets state-of-the-art MODA on <strong>Wildtrack (93.1%)</strong> and <strong>MultiviewX (95.1%)</strong>, beating MVDet, MVDetr and 3DROM.</p>
+              <p>It even stays robust when some cameras drop out.</p>
             </div>
           </div>
         </div>
@@ -805,8 +1074,8 @@
     </section>
 
     <!-- ===================== EDUCATION ===================== -->
-    <section id="education" class="sect" data-sect="03 / EDUCATION">
-      <div class="sect-head reveal"><span class="idx">03</span><h2>Education</h2><span class="rule"></span></div>
+    <section id="education" class="sect" data-sect="04 / EDUCATION">
+      <div class="sect-head reveal"><span class="idx">04</span><h2>Education</h2><span class="rule"></span></div>
       <div class="timeline">
         <div class="tl-item reveal">
           <div class="tl-dot"></div>
@@ -830,8 +1099,8 @@
     </section>
 
     <!-- ===================== PUBLICATIONS ===================== -->
-    <section id="pubs" class="sect" data-sect="04 / PUBLICATIONS">
-      <div class="sect-head reveal"><span class="idx">04</span><h2>Selected publications</h2><span class="rule"></span></div>
+    <section id="pubs" class="sect" data-sect="05 / PUBLICATIONS">
+      <div class="sect-head reveal"><span class="idx">05</span><h2>Selected publications</h2><span class="rule"></span></div>
       <div class="pub-list">
         <a class="pub-card reveal" href="https://github.com/Meta-DiffuB/Meta-DiffuB" target="_blank" rel="noopener">
           <span class="venue">NeurIPS 2024</span>
@@ -851,6 +1120,12 @@
           <p>Adversarial Rap Lyric Generation — Phrase Roll-Out (PRO) &amp; Attention Reward at Every Generation Step (AREGS)</p>
           <span class="go">View walkthrough →</span>
         </a>
+        <a class="pub-card reveal" href="https://doi.org/10.3390/s24154773" target="_blank" rel="noopener">
+          <span class="venue">Sensors (MDPI) ’24</span>
+          <h3>QMVDet</h3>
+          <p>Query-Based Multiview Detection for Multiple Visual Sensor Networks — camera-aware attention via a QBL scheduler · co-author</p>
+          <span class="go">View DOI →</span>
+        </a>
         <a class="pub-card reveal" href="https://doi.org/10.1145/3110025.3110078" target="_blank" rel="noopener">
           <span class="venue">ASONAM ’17</span>
           <h3>SODM &amp; SOS</h3>
@@ -861,8 +1136,8 @@
     </section>
 
     <!-- ===================== CONTACT ===================== -->
-    <section id="contact" class="sect contact" data-sect="05 / CONTACT">
-      <div class="sect-head reveal"><span class="idx">05</span><h2>Get in touch</h2><span class="rule"></span></div>
+    <section id="contact" class="sect contact" data-sect="06 / CONTACT">
+      <div class="sect-head reveal"><span class="idx">06</span><h2>Get in touch</h2><span class="rule"></span></div>
       <p class="lede reveal">Open to research collaborations, talks, and conversations about meta-exploration, generative models, and applied AI.</p>
       <div class="contact-links reveal">
         <a href="mailto:yunyenchuang@maxora.ai">yunyenchuang@maxora.ai <span class="arr">↗</span></a>

@@ -79,6 +79,14 @@
       'The student\u2019s <b>learning effectiveness</b> becomes the meta-reward that trains the explorer.',
       '<b>Quality + diversity together</b> · state-of-the-art NLG · generalizes to GPT-2.'
     ],
+    qmv: [
+      'Multiview detection fuses many cameras onto one ground plane — but <b>weighting them equally</b> ignores occlusion.',
+      'A 2D <b>detection-by-tracking</b> network (FairMOT) anchors reliable 2D foot points.',
+      'Each view is projected to the ground plane and encoded by a <b>deformable transformer</b>.',
+      '<b>2D–3D consistency</b> — small reprojection discrepancy means a reliable camera (attention Ac).',
+      'A <b>QBL scheduler</b> aggregates cameras by Ac, guiding learning only when the weight order shifts.',
+      '<b>State of the art</b> MODA · Wildtrack 93.1% · MultiviewX 95.1%.'
+    ],
     rap: [
       'SeqGAN rolls out <b>entire sentences</b> by MCTS at every step — expensive, prone to mode collapse.',
       'PRO segments each line into <b>meaningful phrases</b> via TextRank — ρ′(y) = (p₁…p_T′).',
@@ -99,6 +107,7 @@
   var vizMap = {
     diffub: { viz: document.getElementById('vizDiffub'), cap: document.getElementById('capDiffub') },
     gan: { viz: document.getElementById('vizGan'), cap: document.getElementById('capGan') },
+    qmv: { viz: document.getElementById('vizQmv'), cap: document.getElementById('capQmv') },
     rap: { viz: document.getElementById('vizRap'), cap: document.getElementById('capRap') },
     sos: { viz: document.getElementById('vizSos'), cap: document.getElementById('capSos') }
   };
