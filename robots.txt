@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kloudchuang.github.io/sitemap.xml
