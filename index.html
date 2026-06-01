@@ -3,268 +3,882 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
   <title>Yun-Yen Chuang</title>
-  <meta name="description" content="Yun-Yen Chuang — Founder & CEO of Maxora AI, Ph.D. in Electrical Engineering at National Taiwan University. Research on meta-learning, diffusion models, and natural language generation." />
+  <meta name="description" content="Yun-Yen Chuang — Founder & CEO of Maxora AI. Ph.D. in Electrical Engineering at National Taiwan University. Meta-exploration for diffusion models and natural language generation." />
   <meta name="author" content="Yun-Yen Chuang" />
-
   <meta property="og:title" content="Yun-Yen Chuang" />
-  <meta property="og:description" content="Founder & CEO of Maxora AI · Ph.D. @ NTU EE · Meta-learning, diffusion models, NLG." />
+  <meta property="og:description" content="Founder & CEO @ Maxora AI · Ph.D. @ NTU EE · Meta-exploration, text diffusion, NLG." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://kloudchuang.github.io" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/diagrams.css" />
 </head>
 <body>
-  <!-- Flowing background layers -->
-  <canvas id="flow"></canvas>
-  <div class="aurora">
-    <span class="blob b1"></span>
-    <span class="blob b2"></span>
-    <span class="blob b3"></span>
+  <div class="paper-grid"></div>
+  <div class="paper-vignette"></div>
+  <span class="reg tl"></span><span class="reg tr"></span>
+  <span class="reg bl"></span><span class="reg br"></span>
+  <div class="scan" id="scan"></div>
+  <div class="readout">
+    <span><b id="roSect">00 / HERO</b></span>
+    <span><span class="dot">▸</span> scroll <span id="roPct">000</span>%</span>
   </div>
-  <div class="grid-overlay"></div>
 
-  <!-- Nav -->
+  <!-- NAV -->
   <nav class="topnav">
-    <a class="brand" href="#top">YC</a>
+    <a class="brand" href="#top"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
     <div class="navlinks">
-      <a href="#about">About</a>
-      <a href="#research">Research</a>
-      <a href="#pubs">Publications</a>
-      <a href="#contact">Contact</a>
+      <a href="#about" class="hide-sm">/about</a>
+      <a href="#research">/research</a>
+      <a href="#pubs" class="hide-sm">/publications</a>
+      <a href="#contact">/contact</a>
     </div>
   </nav>
 
   <main id="top">
-    <!-- HERO -->
-    <header class="hero">
-      <p class="eyebrow reveal">Founder &amp; CEO @ <a href="https://maxora.ai">Maxora AI</a></p>
-      <h1 class="reveal">Yun-Yen<br/><span class="grad">Chuang</span></h1>
-      <p class="lede reveal">
-        Ph.D. @ National Taiwan University (EE). I design
-        <em>explorer–exploiter</em> systems that learn <em>how</em> to add noise,
-        schedule diffusion, and explore — instead of fixing it by hand.
+    <!-- ===================== HERO ===================== -->
+    <header class="hero" data-sect="00 / HERO">
+      <p class="eyebrow reveal">
+        <span class="live"><span class="pulse"></span>FOUNDER &amp; CEO</span>
+        <span>@ <a href="https://maxora.ai">MAXORA&nbsp;AI</a></span>
+        <span>·</span><span>PH.D. — NTU&nbsp;EE</span>
       </p>
-      <div class="hero-tags reveal">
-        <span>Meta-Learning</span>
-        <span>Diffusion Models</span>
-        <span>Reinforcement Learning</span>
-        <span>NLG</span>
+      <h1 class="reveal">Yun-Yen<br /><span class="ln2">Chuang</span></h1>
+      <div class="hero-meta">
+        <div>
+          <p class="lede reveal">
+            I build <em>explorer–exploiter</em> systems that <em>learn how to explore</em> —
+            a second network that schedules noise, samples, and probes, so the
+            generator can focus on what it does best. Diffusion, GANs, and
+            meta&nbsp;reinforcement learning for natural language generation.
+          </p>
+          <div class="tags reveal">
+            <span>Meta-Exploration</span><span>Text Diffusion</span>
+            <span>Language GANs</span><span>Meta RL</span><span>NLG</span>
+          </div>
+          <div class="scroll-cue reveal"><span class="bar"></span>SCROLL TO BEGIN</div>
+        </div>
+
+        <!-- live β-schedule instrument -->
+        <div class="scope reveal" aria-hidden="true">
+          <div class="scope-top">
+            <span class="ttl">β-schedule · live</span>
+            <span class="val" id="scopeVal">βₜ</span>
+          </div>
+          <svg viewBox="0 0 240 96" preserveAspectRatio="none">
+            <line class="axis" x1="6" y1="86" x2="234" y2="86" />
+            <line class="axis" x1="6" y1="10" x2="6" y2="86" />
+            <line class="tick" x1="64" y1="10" x2="64" y2="86" />
+            <line class="tick" x1="122" y1="10" x2="122" y2="86" />
+            <line class="tick" x1="180" y1="10" x2="180" y2="86" />
+            <path class="sqrt" d="M6,80 C70,58 120,40 234,26" />
+            <path class="beta" id="scopeBeta" d="M6,82 C70,70 120,50 234,30" />
+            <text class="lbl" x="10" y="94">t=0</text>
+            <text class="lbl" x="210" y="94">t=T</text>
+          </svg>
+        </div>
       </div>
-      <a class="scroll-cue" href="#about" aria-label="Scroll down">
-        <span></span>
-      </a>
     </header>
 
-    <!-- ABOUT -->
-    <section id="about" class="sect">
-      <h2 class="reveal"><span class="num">01</span> About</h2>
+    <!-- ===================== ABOUT ===================== -->
+    <section id="about" class="sect" data-sect="01 / ABOUT">
+      <div class="sect-head reveal"><span class="idx">01</span><h2>About</h2><span class="rule"></span></div>
       <div class="about-grid">
         <p class="reveal">
-          I am the Founder &amp; CEO of <a href="https://maxora.ai">Maxora AI</a>, building
-          AI products and research-driven technology. My research applies
-          <strong>meta-learning</strong> and <strong>exploration</strong> to
-          <strong>natural language generation</strong> — bridging GANs, diffusion
-          models, and meta reinforcement learning.
+          I am the Founder &amp; CEO of <a href="https://maxora.ai"><em>Maxora&nbsp;AI</em></a>,
+          where I turn research into product. My doctoral research at
+          <strong>National Taiwan University</strong>, advised by
+          <strong>Prof. Hung-yi&nbsp;Lee</strong>, works at the intersection of
+          generative modeling and reinforcement learning for language.
         </p>
         <p class="reveal">
-          A single idea threads through my work: a <em>scheduler / explorer–exploiter</em>
-          framework inspired by <strong>Meta&nbsp;Exploration</strong>. Rather than
-          hand-tuning how a model samples or schedules noise, I train a second network
-          to <em>learn</em> that policy — and let the generator focus on generation.
+          My work asks a single question: instead of hand-crafting <em>how</em> a model
+          adds noise, samples tokens, or explores — what if a second network
+          <strong>learned that policy</strong>? The generator becomes the exploiter;
+          a meta-trained scheduler or explorer does the searching.
+        </p>
+      </div>
+      <div class="thread reveal">
+        <span class="tag">▸ Research thread · one idea, two papers</span>
+        <p>
+          Both <strong>Meta-DiffuB</strong> and <strong>MetaEx-GAN</strong> instantiate the same
+          <em>scheduler / explorer–exploiter</em> pattern from <strong>Meta-Exploration</strong>:
+          a teacher network learns to explore, a student network learns to generate, and the
+          student's own learning effectiveness becomes the reward that trains the teacher.
+          Below, each method is laid out as an instrument you can scroll through.
         </p>
       </div>
     </section>
 
-    <!-- RESEARCH / METHOD VISUALS -->
-    <section id="research" class="sect">
-      <h2 class="reveal"><span class="num">02</span> How my methods work</h2>
+    <!-- ===================== RESEARCH ===================== -->
+    <section id="research" class="sect" data-sect="02 / RESEARCH">
+      <div class="sect-head reveal"><span class="idx">02</span><h2>How the methods work</h2><span class="rule"></span></div>
 
-      <!-- METHOD 1: Meta-DiffuB -->
-      <article class="method reveal">
-        <div class="method-head">
-          <div>
-            <span class="venue-pill">NeurIPS 2024</span>
+      <!-- ============ PAPER 1: Meta-DiffuB ============ -->
+      <article class="paper-block reveal" id="metadiffub">
+        <div class="paper-head">
+          <span class="venue">NeurIPS&nbsp;2024</span>
+          <div class="htext">
             <h3>Meta-DiffuB</h3>
-            <p class="method-sub">A contextualized seq2seq <strong>text diffusion</strong> model with <strong>meta-exploration</strong>.</p>
+            <p>A contextualized sequence-to-sequence <strong>text diffusion</strong> model with
+              <strong>meta-exploration</strong>. <span class="auth">Chuang et&nbsp;al., 2024.</span></p>
           </div>
-          <a class="ghbtn" href="https://github.com/KloudChuang/neurips-meta-diffub">code ↗</a>
+          <a class="ghbtn" href="https://github.com/Meta-DiffuB/Meta-DiffuB" target="_blank" rel="noopener">code ↗</a>
         </div>
 
-        <p class="method-desc">
-          A fixed noise schedule treats every sentence the same. Meta-DiffuB trains a
-          <strong>Scheduler</strong> (the <em>meta-explorer</em>) that reads the context and
-          imposes a <strong>contextualized, per-step noise schedule</strong> on the diffusion
-          model (the <em>exploiter</em>). Generation quality becomes the reward that teaches the
-          scheduler <em>how</em> to noise.
-        </p>
-
-        <!-- Animated diagram -->
-        <div class="diagram diagram-diffub" aria-hidden="true">
-          <div class="lane scheduler">
-            <div class="chip chip-glow">Scheduler&nbsp;S<sub>ϕ</sub><small>meta-explorer</small></div>
-            <svg class="noise-curve" viewBox="0 0 220 60" preserveAspectRatio="none">
-              <path class="curve-track" d="M0,55 C60,55 60,8 110,8 S160,52 220,12" />
-              <path class="curve-flow" d="M0,55 C60,55 60,8 110,8 S160,52 220,12" />
-            </svg>
-            <span class="lane-label">contextualized noise β<sub>t</sub></span>
-          </div>
-
-          <div class="lane pipeline">
-            <div class="node src">Source<br/><b>x</b></div>
-            <div class="diff-track">
-              <span class="diff-label left">noise&nbsp;y<sub>T</sub></span>
-              <div class="steps">
-                <span class="step" style="--i:0"></span>
-                <span class="step" style="--i:1"></span>
-                <span class="step" style="--i:2"></span>
-                <span class="step" style="--i:3"></span>
-                <span class="step" style="--i:4"></span>
-                <span class="step" style="--i:5"></span>
-                <span class="flow-dot"></span>
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizDiffub" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">METHOD · scheduler–exploiter</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
               </div>
-              <span class="diff-label right">clean&nbsp;y<sub>0</sub></span>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahD" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
+
+                  <!-- persistent nodes -->
+                  <g class="persist">
+                    <text class="mono-svg io-lbl" x="14" y="64" font-size="11">wˣ</text>
+                    <path class="flow fp-in" d="M30,60 L62,60" marker-end="url(#ahD)" />
+                    <g class="node-scheduler">
+                      <rect class="node-box" x="64" y="32" width="186" height="58" rx="9" />
+                      <text class="node-lbl" x="157" y="58" font-size="16" text-anchor="middle">Scheduler</text>
+                      <text class="node-sub" x="157" y="76" font-size="10.5" text-anchor="middle">Bψ · meta-explorer</text>
+                    </g>
+                    <path class="flow fp-beta" d="M250,61 L356,61" marker-end="url(#ahD)" />
+                    <text class="mono-svg beta-lbl" x="303" y="50" font-size="11" text-anchor="middle">βˣ</text>
+                    <text class="node-sub" x="303" y="80" font-size="9" text-anchor="middle">contextualized noise</text>
+                    <g class="node-exploiter">
+                      <rect class="node-box" x="358" y="32" width="190" height="58" rx="9" />
+                      <text class="node-lbl" x="453" y="58" font-size="16" text-anchor="middle">Exploiter</text>
+                      <text class="node-sub" x="453" y="76" font-size="10.5" text-anchor="middle">Dθ · S2S diffusion</text>
+                    </g>
+                  </g>
+
+                  <!-- L0 fixed-noise plot -->
+                  <g class="lyr lyr-fixed">
+                    <line class="axis-line" x1="95" y1="150" x2="95" y2="356" />
+                    <line class="axis-line" x1="95" y1="356" x2="520" y2="356" />
+                    <text class="ax-lbl" x="300" y="378" text-anchor="middle">diffusion step  t →</text>
+                    <text class="ax-lbl" x="78" y="255" text-anchor="middle" transform="rotate(-90 78 255)">βₜ noise</text>
+                    <path class="curve-sqrt" d="M95,350 C200,255 320,205 520,175" />
+                    <text class="mono-svg note" x="430" y="205" font-size="11">√-schedule</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11.5">one fixed schedule · every sentence treated alike</text>
+                  </g>
+
+                  <!-- L1 meta-instructions -->
+                  <g class="lyr lyr-instr">
+                    <text class="mono-svg note" x="300" y="150" text-anchor="middle" font-size="12">ι = Bψ(wˣ)  —  Meta-Instructions</text>
+                    <g class="instr-chips" font-size="13">
+                      <g class="chip t"><rect x="120" y="210" width="40" height="34" rx="6"/><text x="140" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip f"><rect x="170" y="210" width="40" height="34" rx="6"/><text x="190" y="232" text-anchor="middle">F</text></g>
+                      <g class="chip t"><rect x="220" y="210" width="40" height="34" rx="6"/><text x="240" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip t"><rect x="270" y="210" width="40" height="34" rx="6"/><text x="290" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip f"><rect x="320" y="210" width="40" height="34" rx="6"/><text x="340" y="232" text-anchor="middle">F</text></g>
+                      <g class="chip t"><rect x="370" y="210" width="40" height="34" rx="6"/><text x="390" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip f"><rect x="420" y="210" width="40" height="34" rx="6"/><text x="440" y="232" text-anchor="middle">F</text></g>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="295" text-anchor="middle" font-size="11.5">‘skipping’ · T → step noise up · F → hold level</text>
+                    <text class="mono-svg note3" x="300" y="320" text-anchor="middle" font-size="10.5">βˣ = skipping(ι, β√)   ·   trained by policy gradient</text>
+                  </g>
+
+                  <!-- L2 contextualized beta -->
+                  <g class="lyr lyr-beta">
+                    <line class="axis-line" x1="95" y1="150" x2="95" y2="356" />
+                    <line class="axis-line" x1="95" y1="356" x2="520" y2="356" />
+                    <text class="ax-lbl" x="300" y="378" text-anchor="middle">diffusion step  t →</text>
+                    <path class="curve-sqrt faded" d="M95,350 C200,255 320,205 520,175" />
+                    <path class="curve-beta easy" d="M95,346 C190,215 320,185 520,158" />
+                    <path class="curve-beta hard" d="M95,352 C210,322 350,305 520,262" />
+                    <text class="mono-svg note-easy" x="430" y="150" font-size="10.5">easy → more noise</text>
+                    <text class="mono-svg note-hard" x="430" y="275" font-size="10.5">hard → less noise</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11.5">βˣ adapts per sentence — the key move</text>
+                  </g>
+
+                  <!-- L3 diffusion / denoise -->
+                  <g class="lyr lyr-diff">
+                    <text class="mono-svg note" x="300" y="158" text-anchor="middle" font-size="12">reverse diffusion with βˣ</text>
+                    <line class="chain-track" x1="80" y1="235" x2="520" y2="235" />
+                    <g class="chain-dots">
+                      <circle cx="110" cy="235" r="8"/><circle cx="178" cy="235" r="8"/>
+                      <circle cx="246" cy="235" r="8"/><circle cx="314" cy="235" r="8"/>
+                      <circle cx="382" cy="235" r="8"/><circle cx="450" cy="235" r="8"/>
+                    </g>
+                    <circle class="chain-flow" cx="110" cy="235" r="6" />
+                    <text class="mono-svg cl" x="70" y="212" text-anchor="middle" font-size="10">zT ~ N(0,I)</text>
+                    <text class="mono-svg cl" x="500" y="212" text-anchor="middle" font-size="10">z₀ → ŷ</text>
+                    <text id="diffubDenoise" class="denoise-out" x="300" y="320" text-anchor="middle" font-size="22">generating</text>
+                    <text class="mono-svg note2" x="300" y="360" text-anchor="middle" font-size="10.5">rounding → discrete target sentence</text>
+                  </g>
+
+                  <!-- L4 meta-reward loop -->
+                  <g class="lyr lyr-reward">
+                    <g class="gbox"><rect x="120" y="180" width="160" height="46" rx="8"/>
+                      <text class="mono-svg" x="200" y="200" text-anchor="middle" font-size="11">Dθ  → BLEU  r</text>
+                      <text class="node-sub" x="200" y="216" text-anchor="middle" font-size="9">before update</text></g>
+                    <g class="gbox alt"><rect x="320" y="180" width="160" height="46" rx="8"/>
+                      <text class="mono-svg" x="400" y="200" text-anchor="middle" font-size="11">Dθ′ → BLEU  r′</text>
+                      <text class="node-sub" x="400" y="216" text-anchor="middle" font-size="9">after update</text></g>
+                    <text class="reward-eq" x="300" y="280" text-anchor="middle" font-size="17">R_β = r′ − r</text>
+                    <text class="node-sub" x="300" y="302" text-anchor="middle" font-size="10">meta-reward</text>
+                    <path class="reward-arc" d="M300,310 C300,200 215,120 158,92" marker-end="url(#ahD)" />
+                    <text class="mono-svg note2" x="300" y="360" text-anchor="middle" font-size="11">∇ψ J(ψ) · policy gradient → update Scheduler</text>
+                  </g>
+
+                  <!-- L5 results -->
+                  <g class="lyr lyr-result">
+                    <text class="result-big disp-svg" x="300" y="175" text-anchor="middle" font-size="26">STATE OF THE ART</text>
+                    <text class="mono-svg note" x="300" y="200" text-anchor="middle" font-size="11">4 / 4 Seq2Seq benchmarks · vs DiffuSeq, SeqDiffuSeq, Dinoiser, PLMs</text>
+                    <g class="bars" transform="translate(150,230)">
+                      <g class="bar-pair" transform="translate(0,0)"><rect class="b-base" x="0" y="60" width="22" height="40"/><rect class="b-ours" x="26" y="22" width="22" height="78"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">CC</text></g>
+                      <g class="bar-pair" transform="translate(80,0)"><rect class="b-base" x="0" y="52" width="22" height="48"/><rect class="b-ours" x="26" y="14" width="22" height="86"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">QT</text></g>
+                      <g class="bar-pair" transform="translate(160,0)"><rect class="b-base" x="0" y="58" width="22" height="42"/><rect class="b-ours" x="26" y="20" width="22" height="80"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">WA</text></g>
+                      <g class="bar-pair" transform="translate(240,0)"><rect class="b-base" x="0" y="50" width="22" height="50"/><rect class="b-ours" x="26" y="10" width="22" height="90"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">QQP</text></g>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="400" text-anchor="middle" font-size="11">scheduler = plug-and-play · no fine-tuning at inference</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capDiffub">DiffuSeq imposes <b>one fixed noise schedule</b> on every sentence — regardless of how hard it is to generate.</div>
             </div>
-            <div class="node tgt">Target<br/><b>ŷ</b></div>
           </div>
 
-          <!-- live denoising text demo -->
-          <div class="denoise-demo">
-            <span class="demo-tag">reverse diffusion</span>
-            <span id="denoiseText" class="denoise-text">generating</span>
-          </div>
-
-          <div class="feedback">
-            <svg viewBox="0 0 600 40" preserveAspectRatio="none">
-              <path class="fb-track" d="M580,30 C580,5 20,5 20,30" />
-              <path class="fb-flow" d="M580,30 C580,5 20,5 20,30" />
-            </svg>
-            <span class="fb-label">generation quality → meta-exploration reward</span>
+          <div class="steps-col" data-steps="diffub">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>One schedule for every sentence</h4>
+              <p>Standard S2S-diffusion (DiffuSeq) adds noise on a <strong>fixed √-schedule</strong>. A trivial paraphrase and a hard open-domain reply are corrupted exactly the same way.</p>
+              <p>But sentences differ in difficulty — non-contextualized noise leaves performance on the table.</p>
+            </div>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · the scheduler</span>
+              <h4>A network that reads the sentence</h4>
+              <p>The <em>Scheduler</em> Bψ — a small Seq2Seq model — reads the conditioning sentence wˣ and emits a sequence of <strong>Meta-Instructions</strong> ι, each labelled <em>True</em> or <em>False</em>.</p>
+              <p>A ‘skipping’ rule turns those labels into noise: <strong>True</strong> steps the noise up, <strong>False</strong> holds it.</p>
+              <div class="eq">ι = Bψ(wˣ)   →   βˣ = <span class="hl">skipping</span>(ι, β√)</div>
+            </div>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · contextualized noise</span>
+              <h4>Less noise for hard sentences</h4>
+              <p>The result is a <em>per-sentence</em> schedule βˣ that bends away from the fixed baseline. Harder sentences get <strong>less</strong> noise to preserve signal; easier ones get <strong>more</strong> to boost diversity.</p>
+              <p>This is the move that non-contextualized schedulers can't make.</p>
+            </div>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · the exploiter</span>
+              <h4>Generate with the scheduled noise</h4>
+              <p>The <em>Exploiter</em> Dθ — the S2S-diffusion model — diffuses and denoises using βˣ, recovering z₀ step by step, then rounds it back into a discrete target sentence ŷ.</p>
+            </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · meta-reward</span>
+              <h4>Generation quality teaches the scheduler</h4>
+              <p>How much did the exploiter improve? Compare BLEU before and after an update: the <strong>meta-reward</strong> R_β = r′ − r flows back through a <em>policy gradient</em> to train the scheduler.</p>
+              <p>The scheduler learns <em>how to noise</em> — never touching the generator's loss directly.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>State of the art, plug-and-play</h4>
+              <p>Meta-DiffuB sets a new bar across <strong>four</strong> Seq2Seq benchmarks, beating prior diffusion models and fine-tuned PLMs.</p>
+              <p>Better still, the trained scheduler drops into existing models like DiffuSeq as a <em>plug-and-play</em> module — no fine-tuning required.</p>
+            </div>
           </div>
         </div>
       </article>
 
-      <!-- METHOD 2: MetaEx-GAN -->
-      <article class="method reveal">
-        <div class="method-head">
-          <div>
-            <span class="venue-pill alt">IEEE/ACM TASLP</span>
+      <!-- ============ PAPER 2: MetaEx-GAN ============ -->
+      <article class="paper-block reveal" id="metaexgan">
+        <div class="paper-head">
+          <span class="venue">IEEE/ACM&nbsp;TASLP</span>
+          <div class="htext">
             <h3>MetaEx-GAN</h3>
-            <p class="method-sub"><strong>Meta exploration</strong> to improve NLG via <strong>GANs</strong>.</p>
+            <p><strong>Meta-exploration</strong> to improve natural language generation via
+              <strong>generative adversarial networks</strong>. <span class="auth">Chuang et&nbsp;al.</span></p>
           </div>
-          <a class="ghbtn" href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN">code ↗</a>
+          <a class="ghbtn" href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN" target="_blank" rel="noopener">code ↗</a>
         </div>
 
-        <p class="method-desc">
-          GAN-based text generation collapses when rewards are sparse and exploration is poor.
-          MetaEx-GAN adds a <strong>Meta-Explorer</strong> that learns an exploration policy for
-          the <strong>Generator</strong>, while the <strong>Discriminator</strong>’s signal flows
-          back as reward — an explorer–exploiter loop that escapes mode collapse.
-        </p>
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizGan" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">METHOD · explorer–generator–discriminator</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahG" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
 
-        <!-- Animated GAN loop -->
-        <div class="diagram diagram-gan" aria-hidden="true">
-          <div class="explorer-row">
-            <div class="chip chip-glow">Meta-Explorer<small>learns exploration</small></div>
+                  <!-- persistent nodes -->
+                  <g class="persist">
+                    <g class="node-explorer">
+                      <rect class="node-box" x="44" y="34" width="190" height="56" rx="9" />
+                      <text class="node-lbl" x="139" y="59" font-size="15" text-anchor="middle">Explorer</text>
+                      <text class="node-sub" x="139" y="77" font-size="10" text-anchor="middle">teacher · meta-exploration</text>
+                    </g>
+                    <g class="node-gen">
+                      <rect class="node-box" x="120" y="252" width="180" height="64" rx="9" />
+                      <text class="node-lbl" x="210" y="280" font-size="15" text-anchor="middle">Generator</text>
+                      <text class="node-sub" x="210" y="298" font-size="10" text-anchor="middle">Gθ · student · learns</text>
+                    </g>
+                    <g class="node-disc">
+                      <rect class="node-box" x="404" y="252" width="156" height="64" rx="9" />
+                      <text class="node-lbl" x="482" y="280" font-size="14" text-anchor="middle">Discriminator</text>
+                      <text class="node-sub" x="482" y="298" font-size="10" text-anchor="middle">Dϕ · real / fake</text>
+                    </g>
+
+                    <!-- flows -->
+                    <path class="flow f-sample" d="M150,90 C150,170 175,210 200,250" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-sample" x="92" y="180" font-size="9.5">sampled batch</text>
+                    <path class="flow f-gen" d="M300,284 L402,284" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-gen" x="351" y="274" font-size="9.5" text-anchor="middle">generated Y</text>
+                    <path class="flow f-reward" d="M470,318 C470,372 215,372 210,320" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-reward" x="340" y="388" font-size="9.5" text-anchor="middle">reward → ∇J(θ)</text>
+                    <path class="flow f-meta" d="M175,250 C120,200 110,140 120,92" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-meta" x="92" y="150" font-size="9" transform="rotate(-78 92 150)">learning effectiveness</text>
+                  </g>
+
+                  <!-- L0 classic GAN problem -->
+                  <g class="lyr lyr-classic">
+                    <rect class="role-badge" x="130" y="222" width="160" height="22" rx="11"/>
+                    <text class="mono-svg badge-tx" x="210" y="237" text-anchor="middle" font-size="10">explore + exploit (both)</text>
+                    <text class="mono-svg note2" x="300" y="410" text-anchor="middle" font-size="11.5">one network samples AND learns → sparse reward, weak diversity</text>
+                    <g class="collapse-dots">
+                      <circle cx="300" cy="150" r="5"/><circle cx="312" cy="152" r="5"/>
+                      <circle cx="306" cy="162" r="5"/><circle cx="296" cy="160" r="5"/>
+                      <circle cx="318" cy="160" r="5"/>
+                    </g>
+                    <text class="mono-svg note" x="360" y="158" font-size="10.5">mode collapse</text>
+                  </g>
+
+                  <!-- L1 split roles -->
+                  <g class="lyr lyr-split">
+                    <text class="mono-svg note" x="420" y="60" text-anchor="middle" font-size="11.5">split the two jobs</text>
+                    <text class="mono-svg note2" x="420" y="120" text-anchor="middle" font-size="10.5">Explorer → sampling</text>
+                    <text class="mono-svg note3" x="420" y="140" text-anchor="middle" font-size="10.5">Generator → learning</text>
+                  </g>
+
+                  <!-- L2 explore / sample diversity -->
+                  <g class="lyr lyr-sample">
+                    <text class="mono-svg note" x="300" y="150" text-anchor="middle" font-size="11.5">explorer rolls out a diverse batch</text>
+                    <g class="spread-dots">
+                      <circle cx="250" cy="185" r="4"/><circle cx="300" cy="172" r="4"/>
+                      <circle cx="350" cy="190" r="4"/><circle cx="275" cy="205" r="4"/>
+                      <circle cx="330" cy="205" r="4"/><circle cx="300" cy="195" r="4"/>
+                    </g>
+                    <g class="tok-fly">
+                      <text x="170" y="175" font-size="10">w₁</text><text x="170" y="205" font-size="10">w₂</text><text x="170" y="235" font-size="10">w₃</text>
+                    </g>
+                  </g>
+
+                  <!-- L3 learn + discriminate -->
+                  <g class="lyr lyr-learn">
+                    <text class="disc-out mono-svg" x="482" y="200" text-anchor="middle" font-size="12">real?  p = 0.5x</text>
+                    <text class="node-sub" x="482" y="218" text-anchor="middle" font-size="9">discriminator score</text>
+                    <text class="mono-svg note2" x="300" y="410" text-anchor="middle" font-size="11">reward updates the generator by policy gradient</text>
+                  </g>
+
+                  <!-- L4 meta loop -->
+                  <g class="lyr lyr-meta">
+                    <text class="reward-eq" x="300" y="170" text-anchor="middle" font-size="15">meta-reward = student's learning effectiveness</text>
+                    <text class="mono-svg note2" x="300" y="200" text-anchor="middle" font-size="10.5">how much did the generator improve from the explorer's batch?</text>
+                    <text class="mono-svg note3" x="300" y="222" text-anchor="middle" font-size="10.5">→ updates the explorer's exploration policy</text>
+                  </g>
+
+                  <!-- L5 result -->
+                  <g class="lyr lyr-result">
+                    <text class="result-big disp-svg" x="300" y="150" text-anchor="middle" font-size="22">QUALITY + DIVERSITY</text>
+                    <text class="mono-svg note" x="300" y="174" text-anchor="middle" font-size="11">improved together, without more sampling</text>
+                    <!-- quality vs diversity scatter -->
+                    <line class="axis-line" x1="180" y1="370" x2="420" y2="370"/>
+                    <line class="axis-line" x1="180" y1="230" x2="180" y2="370"/>
+                    <text class="ax-lbl" x="300" y="392" text-anchor="middle">quality →</text>
+                    <text class="ax-lbl" x="165" y="300" text-anchor="middle" transform="rotate(-90 165 300)">diversity →</text>
+                    <circle class="pt base" cx="250" cy="335" r="6"/><text class="ax-lbl" x="250" y="325" text-anchor="middle">GANs</text>
+                    <circle class="pt ours" cx="380" cy="262" r="7"/><text class="ax-lbl ours-lbl" x="380" y="252" text-anchor="middle">MetaEx-GAN</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11">generalizes to GPT-2-based generators</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capGan">In a classic Language GAN, a single <b>Generator both samples and learns</b> — the same policy explores and exploits.</div>
+            </div>
           </div>
 
-          <div class="gan-loop">
-            <div class="gan-node gen">
-              <b>Generator</b><span>G<sub>θ</sub></span>
+          <div class="steps-col" data-steps="gan">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>One network, two jobs</h4>
+              <p>Language GANs train a generator with reinforcement learning. But that single generator must <strong>both sample</strong> (explore) <strong>and learn</strong> (exploit) — with the same policy.</p>
+              <p>Rewards are sparse, so exploration is poor: quality and diversity can't improve together, and the model drifts toward mode collapse.</p>
             </div>
-
-            <div class="gan-flow forward">
-              <svg viewBox="0 0 180 60" preserveAspectRatio="none">
-                <path class="gan-track" d="M4,30 H176" />
-                <path class="gan-arrow-flow" d="M4,30 H176" />
-              </svg>
-              <span class="gan-flow-label">sampled tokens</span>
-              <span class="tok t1">w₁</span><span class="tok t2">w₂</span><span class="tok t3">w₃</span>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · split the roles</span>
+              <h4>A dedicated explorer</h4>
+              <p>MetaEx-GAN adds a meta-trained <em>Explorer</em> (the teacher), whose only job is sampling. The <em>Generator</em> (the student) is freed to just learn.</p>
             </div>
-
-            <div class="gan-node disc">
-              <b>Discriminator</b><span>D<sub>ψ</sub></span>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · explore</span>
+              <h4>Sample a richer space</h4>
+              <p>The explorer rolls out a <strong>diverse batch</strong> of candidate sequences — searching parts of the space the generator's own policy would never reach.</p>
             </div>
-
-            <div class="gan-flow reward">
-              <svg viewBox="0 0 360 70" preserveAspectRatio="none">
-                <path class="gan-track" d="M350,8 C350,55 10,55 10,18" />
-                <path class="gan-reward-flow" d="M350,8 C350,55 10,55 10,18" />
-              </svg>
-              <span class="gan-flow-label reward-label">reward → policy gradient</span>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · learn &amp; judge</span>
+              <h4>Generator learns, discriminator scores</h4>
+              <p>The generator learns from that batch; the <em>Discriminator</em> scores real vs. generated and returns a reward that updates the generator by policy gradient.</p>
             </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · meta-reward</span>
+              <h4>The student's progress trains the teacher</h4>
+              <p>The generator's <strong>learning effectiveness</strong> — how much it improved on the explorer's batch — becomes the <em>meta-reward</em> that updates the explorer's policy.</p>
+              <p>The teacher learns to explore exactly where the student learns most.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>Quality and diversity, together</h4>
+              <p>MetaEx-GAN reaches state-of-the-art NLG, improving sampling quality <em>and</em> diversity at once — without generating more sequences.</p>
+              <p>It also generalizes to large pre-trained generators like <strong>GPT-2</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </article>
 
-            <svg class="explore-inject" viewBox="0 0 120 50" preserveAspectRatio="none">
-              <path class="inject-track" d="M60,4 V46" />
-              <path class="inject-flow" d="M60,4 V46" />
-            </svg>
+      <!-- ============ PAPER 3: RapGAN ============ -->
+      <article class="paper-block reveal" id="rapgan">
+        <div class="paper-head">
+          <span class="venue">IEEE&nbsp;·&nbsp;RLG</span>
+          <div class="htext">
+            <h3>RapGAN</h3>
+            <p><strong>Adversarial rap lyric generation</strong> with phrase-level roll-out and
+              attention rewards. <span class="auth">Chuang, Hsu, Chang, Lee.</span></p>
+          </div>
+          <a class="ghbtn" href="#pubs">details ↓</a>
+        </div>
+
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizRap" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">METHOD · PRO + AREGS</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahR" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
+
+                  <!-- persistent nodes -->
+                  <g class="persist">
+                    <g class="node-gen">
+                      <rect class="node-box" x="56" y="304" width="176" height="58" rx="9" />
+                      <text class="node-lbl" x="144" y="330" font-size="15" text-anchor="middle">Generator</text>
+                      <text class="node-sub" x="144" y="348" font-size="10" text-anchor="middle">Gθ · word-by-word</text>
+                    </g>
+                    <g class="node-disc">
+                      <rect class="node-box" x="368" y="304" width="180" height="58" rx="9" />
+                      <text class="node-lbl" x="458" y="328" font-size="14" text-anchor="middle">Discriminator</text>
+                      <text class="node-sub" x="458" y="346" font-size="10" text-anchor="middle">attention-LSTM</text>
+                    </g>
+                    <path class="flow f-gd" d="M232,330 L366,330" marker-end="url(#ahR)" />
+                    <text class="mono-svg fl" x="299" y="320" font-size="9.5" text-anchor="middle">generated ŷ</text>
+                    <path class="flow f-rew" d="M450,362 C450,408 150,408 146,364" marker-end="url(#ahR)" />
+                    <text class="mono-svg fl" x="298" y="424" font-size="9.5" text-anchor="middle">reward → ∇J(θ)</text>
+                  </g>
+
+                  <!-- L0: SeqGAN expensive rollout -->
+                  <g class="lyr ly0">
+                    <text class="mono-svg note" x="300" y="58" text-anchor="middle" font-size="12">SeqGAN: roll out the whole sentence (MCTS)</text>
+                    <circle class="mcts-root" cx="300" cy="92" r="7"/>
+                    <path class="mcts expensive" d="M300,99 L180,180 M300,99 L240,180 M300,99 L300,180 M300,99 L360,180 M300,99 L420,180"/>
+                    <g class="mcts-leaf-g">
+                      <circle class="mcts-leaf" cx="180" cy="186" r="6"/><circle class="mcts-leaf" cx="240" cy="186" r="6"/>
+                      <circle class="mcts-leaf" cx="300" cy="186" r="6"/><circle class="mcts-leaf" cx="360" cy="186" r="6"/>
+                      <circle class="mcts-leaf" cx="420" cy="186" r="6"/>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="214" text-anchor="middle" font-size="11">O(N) roll-outs every step — expensive</text>
+                    <text class="mono-svg note3" x="300" y="236" text-anchor="middle" font-size="10.5">using D(x,ŷ) directly → mode collapse, monotonous lyrics</text>
+                  </g>
+
+                  <!-- L1: PRO segment into meaningful phrases -->
+                  <g class="lyr ly1">
+                    <text class="mono-svg note" x="300" y="92" text-anchor="middle" font-size="12">PRO · segment into meaningful phrases (TextRank)</text>
+                    <g class="ph-chips" font-size="12" transform="translate(0,4)">
+                      <g class="ph-chip"><rect x="96" y="140" width="58" height="34" rx="6"/><text x="125" y="162" text-anchor="middle">I</text></g>
+                      <g class="ph-chip meaning"><rect x="160" y="140" width="92" height="34" rx="6"/><text x="206" y="162" text-anchor="middle">am doing</text></g>
+                      <g class="ph-chip meaning"><rect x="258" y="140" width="98" height="34" rx="6"/><text x="307" y="162" text-anchor="middle">wonderful</text></g>
+                      <g class="ph-chip"><rect x="362" y="140" width="42" height="34" rx="6"/><text x="383" y="162" text-anchor="middle">,</text></g>
+                      <g class="ph-chip meaning"><rect x="410" y="140" width="92" height="34" rx="6"/><text x="456" y="162" text-anchor="middle">thank you</text></g>
+                    </g>
+                    <text class="mono-svg note3" x="300" y="216" text-anchor="middle" font-size="10.5">ρ′(y) = (p₁, p₂, …, p_T′)  ·  meaningful phrases only</text>
+                    <text class="mono-svg note2" x="300" y="240" text-anchor="middle" font-size="11">drop meaningless cuts → preserve fluency</text>
+                  </g>
+
+                  <!-- L2: PRO phrase-bounded roll-out -->
+                  <g class="lyr ly2">
+                    <text class="mono-svg note" x="300" y="92" text-anchor="middle" font-size="12">reward only meaningful phrases</text>
+                    <line class="axis-line" x1="90" y1="170" x2="510" y2="170"/>
+                    <g class="roll-tokens" font-size="9">
+                      <circle class="post-dot" cx="120" cy="170" r="4"/><circle class="post-dot" cx="180" cy="170" r="4"/>
+                      <circle class="post-dot" cx="240" cy="170" r="4"/><circle class="post-dot" cx="300" cy="170" r="4"/>
+                      <circle class="post-dot" cx="360" cy="170" r="4"/><circle class="post-dot" cx="420" cy="170" r="4"/>
+                      <circle class="post-dot" cx="480" cy="170" r="4"/>
+                    </g>
+                    <path class="roll-arc" d="M120,162 C150,128 210,128 240,162"/>
+                    <path class="roll-arc" d="M300,162 C330,128 390,128 420,162"/>
+                    <text class="mono-svg note3" x="300" y="214" text-anchor="middle" font-size="10.5">roll out to phrase end t′_end — not sentence end</text>
+                    <text class="mono-svg note2" x="300" y="238" text-anchor="middle" font-size="11">streamlined training · faster, more fluent</text>
+                  </g>
+
+                  <!-- L3: AREGS attention -->
+                  <g class="lyr ly3">
+                    <text class="mono-svg note" x="300" y="78" text-anchor="middle" font-size="12">AREGS · attention-LSTM weights α</text>
+                    <line class="axis-line" x1="120" y1="200" x2="480" y2="200"/>
+                    <g class="attn-bars">
+                      <rect class="attn-base" x="132" y="178" width="22" height="22"/><rect class="attn-bar" x="132" y="160" width="22" height="40"/>
+                      <rect class="attn-base" x="180" y="186" width="22" height="14"/><rect class="attn-bar" x="180" y="150" width="22" height="50"/>
+                      <rect class="attn-base" x="228" y="190" width="22" height="10"/><rect class="attn-bar" x="228" y="120" width="22" height="80"/>
+                      <rect class="attn-base" x="276" y="184" width="22" height="16"/><rect class="attn-bar" x="276" y="138" width="22" height="62"/>
+                      <rect class="attn-base" x="324" y="192" width="22" height="8"/><rect class="attn-bar" x="324" y="170" width="22" height="30"/>
+                      <rect class="attn-base" x="372" y="188" width="22" height="12"/><rect class="attn-bar" x="372" y="132" width="22" height="68"/>
+                      <rect class="attn-base" x="420" y="190" width="22" height="10"/><rect class="attn-bar" x="420" y="176" width="22" height="24"/>
+                    </g>
+                    <text class="mono-svg note3" x="300" y="226" text-anchor="middle" font-size="11">α = softmax(wᵀ·tanh(H))   ·   r = αᵀH</text>
+                    <text class="mono-svg note2" x="300" y="250" text-anchor="middle" font-size="10.5">captures local phrases + global sentence semantics</text>
+                  </g>
+
+                  <!-- L4: feature matching -->
+                  <g class="lyr ly4">
+                    <text class="mono-svg note" x="300" y="78" text-anchor="middle" font-size="12">match attention weights, not D directly</text>
+                    <path class="fm-real" d="M120,200 C160,200 175,120 205,120 C235,120 250,200 290,200"/>
+                    <text class="mono-svg" x="150" y="118" font-size="10">α* real</text>
+                    <path class="fm-gen" d="M300,200 C342,200 356,128 388,128 C420,128 432,200 480,200"/>
+                    <text class="mono-svg" x="452" y="124" font-size="10">α̂ gen</text>
+                    <text class="fm-sim mono-svg" x="300" y="240" text-anchor="middle" font-size="15">S(α*, α̂) → reward</text>
+                    <text class="mono-svg note2" x="300" y="264" text-anchor="middle" font-size="10.5">cosine feature matching · prevents mode collapse</text>
+                  </g>
+
+                  <!-- L5: result -->
+                  <g class="lyr ly5">
+                    <text class="result-big disp-svg" x="300" y="74" text-anchor="middle" font-size="22">STATE-OF-THE-ART RLG</text>
+                    <text class="mono-svg note" x="300" y="98" text-anchor="middle" font-size="11">vs SeqGAN · MaliGAN · Ghost Writer</text>
+                    <g class="bars" transform="translate(168,118)">
+                      <g class="bar-pair"><rect class="b-base" x="0" y="58" width="22" height="42"/><rect class="b-ours" x="26" y="18" width="22" height="82"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">DIV</text></g>
+                      <g class="bar-pair" transform="translate(90,0)"><rect class="b-base" x="0" y="62" width="22" height="38"/><rect class="b-ours" x="26" y="22" width="22" height="78"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">ORIG</text></g>
+                      <g class="bar-pair" transform="translate(180,0)"><rect class="b-base" x="0" y="54" width="22" height="46"/><rect class="b-ours" x="26" y="14" width="22" height="86"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">FLU</text></g>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="300" text-anchor="middle" font-size="11">+ open 160k-song Chinese RLG dataset</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capRap">SeqGAN rolls out <b>entire sentences</b> by MCTS at every step — expensive, and prone to mode collapse.</div>
+            </div>
+          </div>
+
+          <div class="steps-col" data-steps="rap">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>Rolling out whole sentences is expensive</h4>
+              <p>To reward a partial sequence, SeqGAN runs <strong>Monte-Carlo roll-outs to the end of the sentence</strong> at every generation step — computationally heavy.</p>
+              <p>And using the discriminator's score directly invites <em>mode collapse</em>: rap lyrics that all sound the same.</p>
+            </div>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · PRO</span>
+              <h4>Roll out meaningful phrases</h4>
+              <p>Phrase Roll-Out segments each line into <strong>meaningful phrases</strong> with TextRank, ρ′(y) = (p₁…p_T′), instead of arbitrary or full-sentence cuts.</p>
+              <p>Meaningless fragments are filtered out, which keeps the generated lyric <em>fluent</em>.</p>
+            </div>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · streamlined reward</span>
+              <h4>Reward to the phrase boundary</h4>
+              <p>Each phrase is rewarded only out to its own end step t′_end — not the end of the whole sentence. The roll-out is <strong>far cheaper</strong> while staying meaningful.</p>
+            </div>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · AREGS</span>
+              <h4>An attention-LSTM discriminator</h4>
+              <p>The discriminator learns <em>attention alignment weights</em> α = softmax(wᵀ·tanh(H)), capturing both local phrase features and global sentence meaning across variable-length phrases.</p>
+            </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · feature matching</span>
+              <h4>Match the weights, not the score</h4>
+              <p>Instead of the raw score D(x,ŷ), the generator is rewarded by the <strong>cosine similarity S(α*, α̂)</strong> between real and generated attention weights.</p>
+              <p>This feature-matching signal <em>prevents mode collapse</em> and lifts diversity and originality.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>Better lyrics — and a dataset</h4>
+              <p>RapGAN beats SeqGAN, MaliGAN and Ghost Writer on <em>diversity, originality and fluency</em>, validated against human evaluation.</p>
+              <p>It also releases an open <strong>160,000-song</strong> Chinese rap dataset for future research.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============ PAPER 4: SODM / SOS ============ -->
+      <article class="paper-block reveal" id="sodm">
+        <div class="paper-head">
+          <span class="venue">ASONAM&nbsp;’17</span>
+          <div class="htext">
+            <h3>SODM &amp; SOS</h3>
+            <p>Detect &amp; <strong>rearrange social-overloaded posts</strong> to prevent social overload.
+              <span class="auth">Chuang, Hsu, Lin, Chang.</span></p>
+          </div>
+          <a class="ghbtn" href="https://doi.org/10.1145/3110025.3110078" target="_blank" rel="noopener">DOI ↗</a>
+        </div>
+
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizSos" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">SYSTEM · detect → rearrange</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahS" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
+
+                  <!-- L0: FIFO feed, overload clusters -->
+                  <g class="lyr ly0">
+                    <text class="mono-svg note" x="220" y="56" text-anchor="middle" font-size="12">first-in-first-out feed</text>
+                    <g class="feed0">
+                      <rect class="post norm" x="150" y="78"  width="150" height="20" rx="4"/>
+                      <rect class="post over" x="150" y="104" width="150" height="20" rx="4"/>
+                      <rect class="post over" x="150" y="130" width="150" height="20" rx="4"/>
+                      <rect class="post over" x="150" y="156" width="150" height="20" rx="4"/>
+                      <rect class="post over" x="150" y="182" width="150" height="20" rx="4"/>
+                      <rect class="post norm" x="150" y="208" width="150" height="20" rx="4"/>
+                      <rect class="post over" x="150" y="234" width="150" height="20" rx="4"/>
+                    </g>
+                    <!-- reader load gauge -->
+                    <text class="gauge-lbl" x="430" y="72" text-anchor="middle" font-size="9">reader load</text>
+                    <rect class="load-track" x="412" y="80" width="36" height="170" rx="6"/>
+                    <rect class="load-fill hot" x="416" y="104" width="28" height="142" rx="4"/>
+                    <text class="mono-svg note2" x="300" y="290" text-anchor="middle" font-size="11">support-seeking posts cluster → reader load spikes</text>
+                    <text class="mono-svg note3" x="300" y="312" text-anchor="middle" font-size="10.5">the “cost of caring” — stress, depression</text>
+                  </g>
+
+                  <!-- L1: data + embeddings -->
+                  <g class="lyr ly1">
+                    <text class="mono-svg note" x="300" y="64" text-anchor="middle" font-size="12">label boards · learn embeddings</text>
+                    <g class="src-chips" font-size="11">
+                      <g class="src-chip over"><rect x="96" y="120" width="100" height="32" rx="7"/><text x="146" y="140" text-anchor="middle">Prozac</text></g>
+                      <g class="src-chip over"><rect x="96" y="162" width="100" height="32" rx="7"/><text x="146" y="182" text-anchor="middle">Hate</text></g>
+                      <g class="src-chip"><rect x="96" y="204" width="100" height="32" rx="7"/><text x="146" y="224" text-anchor="middle">Others</text></g>
+                    </g>
+                    <path class="net-flow" d="M196,168 L292,178" marker-end="url(#ahS)"/>
+                    <path class="net-flow" d="M196,178 L292,178"/>
+                    <g class="src-chip"><rect x="296" y="158" width="150" height="40" rx="8" class="net-layer active"/><text x="371" y="182" text-anchor="middle" font-size="11">Word2vec · Skip-Gram</text></g>
+                    <text class="mono-svg note2" x="300" y="262" text-anchor="middle" font-size="11">overload = {Prozac, Hate} · normal = others</text>
+                    <text class="mono-svg note3" x="300" y="284" text-anchor="middle" font-size="10.5">balanced sampling avoids board imbalance</text>
+                  </g>
+
+                  <!-- L2: CKDGNN -->
+                  <g class="lyr ly2">
+                    <text class="mono-svg note" x="300" y="58" text-anchor="middle" font-size="12">SODM · CKDGNN detector</text>
+                    <g font-size="9.5" text-anchor="middle">
+                      <rect class="net-layer" x="70"  y="120" width="78" height="56" rx="7"/><text x="109" y="146">word</text><text x="109" y="160">embed</text>
+                      <rect class="net-layer" x="168" y="120" width="78" height="56" rx="7"/><text x="207" y="146">CNN</text><text x="207" y="160">filters</text>
+                      <rect class="net-layer active" x="266" y="120" width="78" height="56" rx="7"/><text x="305" y="143">K-max</text><text x="305" y="157">pool</text><text x="305" y="171">(doc)</text>
+                      <rect class="net-layer" x="364" y="120" width="78" height="56" rx="7"/><text x="403" y="146">GRNN</text><text x="403" y="160">seq</text>
+                      <rect class="net-layer" x="462" y="120" width="78" height="56" rx="7"/><text x="501" y="146">soft-</text><text x="501" y="160">max</text>
+                    </g>
+                    <path class="net-flow" d="M148,148 L166,148" marker-end="url(#ahS)"/>
+                    <path class="net-flow" d="M246,148 L264,148" marker-end="url(#ahS)"/>
+                    <path class="net-flow" d="M344,148 L362,148" marker-end="url(#ahS)"/>
+                    <path class="net-flow" d="M442,148 L460,148" marker-end="url(#ahS)"/>
+                    <text class="acc-big mono-svg" x="300" y="226" text-anchor="middle" font-size="26">95.15%</text>
+                    <text class="mono-svg note2" x="300" y="252" text-anchor="middle" font-size="11">overload-detection accuracy · 5-fold CV</text>
+                    <text class="mono-svg note3" x="300" y="274" text-anchor="middle" font-size="10.5">beats DCNN · CNN-GRNN · LSTM-GRNN</text>
+                  </g>
+
+                  <!-- L3: score + threshold -->
+                  <g class="lyr ly3">
+                    <text class="mono-svg note" x="300" y="58" text-anchor="middle" font-size="12">score every post · threshold 0.5</text>
+                    <line class="thresh-line" x1="330" y1="80" x2="330" y2="266"/>
+                    <text class="thresh-lbl" x="330" y="284" text-anchor="middle" font-size="9">θ = 0.5</text>
+                    <g class="score-feed">
+                      <rect class="post norm" x="180" y="86"  width="120" height="18" rx="4"/><text class="score-tag" x="312" y="99" font-size="9">0.18</text>
+                      <rect class="post over"  x="180" y="110" width="186" height="18" rx="4"/><text class="score-tag" x="378" y="123" font-size="9">0.91</text>
+                      <rect class="post over"  x="180" y="134" width="168" height="18" rx="4"/><text class="score-tag" x="360" y="147" font-size="9">0.78</text>
+                      <rect class="post norm" x="180" y="158" width="96"  height="18" rx="4"/><text class="score-tag" x="288" y="171" font-size="9">0.32</text>
+                      <rect class="post over"  x="180" y="182" width="174" height="18" rx="4"/><text class="score-tag" x="366" y="195" font-size="9">0.83</text>
+                      <rect class="post norm" x="180" y="206" width="84"  height="18" rx="4"/><text class="score-tag" x="276" y="219" font-size="9">0.27</text>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="300" text-anchor="middle" font-size="11">posts above 0.5 → flagged social-overload</text>
+                  </g>
+
+                  <!-- L4: SOS rearrange -->
+                  <g class="lyr ly4">
+                    <text class="mono-svg note" x="158" y="64" text-anchor="middle" font-size="11">before</text>
+                    <text class="mono-svg note" x="442" y="64" text-anchor="middle" font-size="11">after · SOS</text>
+                    <g class="feed-before">
+                      <rect class="post over"  x="108" y="80"  width="100" height="18" rx="4"/>
+                      <rect class="post over"  x="108" y="104" width="100" height="18" rx="4"/>
+                      <rect class="post over"  x="108" y="128" width="100" height="18" rx="4"/>
+                      <rect class="post over"  x="108" y="152" width="100" height="18" rx="4"/>
+                      <rect class="post norm"  x="108" y="176" width="100" height="18" rx="4"/>
+                      <rect class="post norm"  x="108" y="200" width="100" height="18" rx="4"/>
+                    </g>
+                    <path class="reorder-arc" d="M214,150 C300,150 300,140 386,128" marker-end="url(#ahS)"/>
+                    <g class="feed-after">
+                      <rect class="post over"  x="392" y="80"  width="100" height="18" rx="4"/>
+                      <rect class="post over"  x="392" y="104" width="100" height="18" rx="4"/>
+                      <rect class="post over"  x="392" y="128" width="100" height="18" rx="4"/>
+                      <rect class="post calm"  x="392" y="152" width="100" height="18" rx="4"/>
+                      <rect class="post over"  x="392" y="176" width="100" height="18" rx="4"/>
+                      <rect class="post norm"  x="392" y="200" width="100" height="18" rx="4"/>
+                    </g>
+                    <circle class="insert-mark" cx="382" cy="161" r="4"/>
+                    <text class="mono-svg note2" x="300" y="252" text-anchor="middle" font-size="11">max 3 consecutive overload → insert a calm post</text>
+                    <text class="mono-svg note3" x="300" y="274" text-anchor="middle" font-size="10.5">reader load stays under the tolerance line</text>
+                  </g>
+
+                  <!-- L5: result -->
+                  <g class="lyr ly5">
+                    <text class="stat-accent disp-svg" x="300" y="120" text-anchor="middle" font-size="44">95.15%</text>
+                    <text class="stat-cap" x="300" y="146" text-anchor="middle" font-size="11">social-overload detection accuracy</text>
+                    <line class="axis-line" x1="180" y1="180" x2="420" y2="180"/>
+                    <text class="stat-big disp-svg" x="300" y="246" text-anchor="middle" font-size="44">75%</text>
+                    <text class="stat-cap" x="300" y="272" text-anchor="middle" font-size="11">of participants reported reduced stress</text>
+                    <text class="mono-svg note2" x="300" y="320" text-anchor="middle" font-size="11">detection + rearrangement = a calmer feed</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capSos">A first-in-first-out feed lets <b>support-seeking posts cluster</b> — overwhelming the reader.</div>
+            </div>
+          </div>
+
+          <div class="steps-col" data-steps="sos">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>Feeds let negativity pile up</h4>
+              <p>Social feeds display posts first-in-first-out. When many <strong>support-seeking, negative posts</strong> land together, readers absorb them all at once.</p>
+              <p>Psychologists call it the <em>cost of caring</em> — repeated exposure drives stress and depression.</p>
+            </div>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · the data</span>
+              <h4>Label boards, learn embeddings</h4>
+              <p>Posts crawled from a BBS are labelled by source: the <strong>Prozac</strong> and <strong>Hate</strong> boards as social-overload, others as normal — balanced to avoid skew.</p>
+              <p>Words are embedded with <em>Word2vec Skip-Gram</em>.</p>
+            </div>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · SODM</span>
+              <h4>A document-level detector</h4>
+              <p>CKDGNN stacks word embeddings → CNN filters → <strong>K-max pooling at the document level</strong> → a GRNN → softmax, scoring each post's overload probability.</p>
+              <p>It reaches <em>95.15%</em> accuracy, beating DCNN, CNN-GRNN and LSTM-GRNN.</p>
+            </div>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · scoring</span>
+              <h4>Flag with a threshold</h4>
+              <p>Every post gets a probability. Anything above the <strong>0.5 threshold</strong> is flagged as social-overload — the rest are normal load.</p>
+            </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · SOS</span>
+              <h4>Rearrange to protect the reader</h4>
+              <p>The Social-Overload prevention System re-sorts the feed so no more than <strong>three overload posts</strong> appear in a row — inserting a calmer post to break the streak.</p>
+              <p>Reader load stays under the tolerance line.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>A measurably calmer feed</h4>
+              <p>Detection hits <em>95.15%</em> accuracy, and after rearrangement <strong>75% of participants</strong> reported that social-overload stress was reduced.</p>
+            </div>
           </div>
         </div>
       </article>
     </section>
 
-    <!-- EDUCATION -->
-    <section id="education" class="sect">
-      <h2 class="reveal"><span class="num">03</span> Education</h2>
+    <!-- ===================== EDUCATION ===================== -->
+    <section id="education" class="sect" data-sect="03 / EDUCATION">
+      <div class="sect-head reveal"><span class="idx">03</span><h2>Education</h2><span class="rule"></span></div>
       <div class="timeline">
         <div class="tl-item reveal">
           <div class="tl-dot"></div>
-          <div class="tl-body">
-            <h4>Ph.D., Electrical Engineering</h4>
-            <p class="tl-inst">National Taiwan University</p>
-            <p class="tl-detail">Speech Processing Lab · Advisor: Prof. Hung-yi Lee (李宏毅)</p>
-          </div>
+          <h4>Ph.D., Electrical Engineering</h4>
+          <p class="tl-inst">National Taiwan University</p>
+          <p class="tl-detail">SEP 2022 – 2025 · SPEECH LAB · ADVISOR — PROF. HUNG-YI LEE (李宏毅)</p>
         </div>
         <div class="tl-item reveal">
           <div class="tl-dot"></div>
-          <div class="tl-body">
-            <h4>M.S., Engineering Science &amp; Ocean Engineering</h4>
-            <p class="tl-inst">National Taiwan University</p>
-            <p class="tl-detail">iCAN Lab · Advisor: Prof. Ray-I Chang (張瑞益)</p>
-          </div>
+          <h4>M.S., Engineering Science &amp; Ocean Engineering</h4>
+          <p class="tl-inst">National Taiwan University</p>
+          <p class="tl-detail">SEP 2015 – JUN 2017 · iCAN LAB · ADVISOR — PROF. RAY-I CHANG (張瑞益)</p>
+        </div>
+        <div class="tl-item reveal">
+          <div class="tl-dot"></div>
+          <h4>B.S., Computer Science</h4>
+          <p class="tl-inst">National Changhua University of Education</p>
+          <p class="tl-detail">SEP 2011 – JUN 2015</p>
         </div>
       </div>
     </section>
 
-    <!-- PUBLICATIONS -->
-    <section id="pubs" class="sect">
-      <h2 class="reveal"><span class="num">04</span> Selected Publications</h2>
+    <!-- ===================== PUBLICATIONS ===================== -->
+    <section id="pubs" class="sect" data-sect="04 / PUBLICATIONS">
+      <div class="sect-head reveal"><span class="idx">04</span><h2>Selected publications</h2><span class="rule"></span></div>
       <div class="pub-list">
-        <a class="pub-card reveal" href="https://github.com/KloudChuang/neurips-meta-diffub">
-          <span class="venue-pill">NeurIPS 2024</span>
+        <a class="pub-card reveal" href="https://github.com/Meta-DiffuB/Meta-DiffuB" target="_blank" rel="noopener">
+          <span class="venue">NeurIPS 2024</span>
           <h3>Meta-DiffuB</h3>
           <p>A Contextualized Sequence-to-Sequence Text Diffusion Model with Meta-Exploration</p>
-          <span class="pub-go">View code →</span>
+          <span class="go">View code →</span>
         </a>
-        <a class="pub-card reveal" href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN">
-          <span class="venue-pill alt">IEEE/ACM TASLP</span>
+        <a class="pub-card reveal" href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN" target="_blank" rel="noopener">
+          <span class="venue">IEEE/ACM TASLP</span>
           <h3>MetaEx-GAN</h3>
           <p>Meta Exploration to Improve Natural Language Generation via Generative Adversarial Networks</p>
-          <span class="pub-go">View code →</span>
+          <span class="go">View code →</span>
+        </a>
+        <a class="pub-card reveal" href="#rapgan">
+          <span class="venue">IEEE · RLG</span>
+          <h3>RapGAN</h3>
+          <p>Adversarial Rap Lyric Generation — Phrase Roll-Out (PRO) &amp; Attention Reward at Every Generation Step (AREGS)</p>
+          <span class="go">View walkthrough →</span>
+        </a>
+        <a class="pub-card reveal" href="https://doi.org/10.1145/3110025.3110078" target="_blank" rel="noopener">
+          <span class="venue">ASONAM ’17</span>
+          <h3>SODM &amp; SOS</h3>
+          <p>Rearrange Social Overloaded Posts to Prevent Social Overload — detection (CKDGNN) + feed rearrangement</p>
+          <span class="go">View DOI →</span>
         </a>
       </div>
     </section>
 
-    <!-- CONTACT -->
-    <section id="contact" class="sect contact">
-      <h2 class="reveal"><span class="num">05</span> Get in touch</h2>
-      <p class="reveal contact-lede">Open to research collaborations, talks, and conversations about AI.</p>
+    <!-- ===================== CONTACT ===================== -->
+    <section id="contact" class="sect contact" data-sect="05 / CONTACT">
+      <div class="sect-head reveal"><span class="idx">05</span><h2>Get in touch</h2><span class="rule"></span></div>
+      <p class="lede reveal">Open to research collaborations, talks, and conversations about meta-exploration, generative models, and applied AI.</p>
       <div class="contact-links reveal">
-        <a href="mailto:yunyenchuang@maxora.ai">yunyenchuang@maxora.ai</a>
-        <a href="https://github.com/KloudChuang">GitHub</a>
-        <a href="https://scholar.google.com/" rel="me">Google Scholar</a>
-        <a href="https://maxora.ai">Maxora AI</a>
+        <a href="mailto:yunyenchuang@maxora.ai">yunyenchuang@maxora.ai <span class="arr">↗</span></a>
+        <a href="https://github.com/KloudChuang" target="_blank" rel="noopener">GitHub <span class="arr">↗</span></a>
+        <a href="https://scholar.google.com/citations?user=5BJ63mUAAAAJ&hl=en" target="_blank" rel="me noopener">Google Scholar <span class="arr">↗</span></a>
+        <a href="https://www.facebook.com/zhuang.y.yan/" target="_blank" rel="me noopener">Facebook <span class="arr">↗</span></a>
+        <a href="https://maxora.ai" target="_blank" rel="noopener">Maxora AI <span class="arr">↗</span></a>
       </div>
     </section>
 
     <footer>
-      <p>© <span id="year">2026</span> Yun-Yen Chuang</p>
+      <span>© <span id="year">2026</span> YUN-YEN CHUANG</span>
+      <span>NTU · MAXORA AI · TAIPEI</span>
     </footer>
   </main>
 
-  <script src="main.js"></script>
+  <script src="assets/main.js"></script>
 </body>
 </html>
