@@ -191,10 +191,10 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 500; }
 .id-card { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.2rem; }
 .id-photo {
   width: 132px; height: 132px; flex: none; border-radius: 50%; object-fit: cover;
-  filter: grayscale(1) contrast(1.04); border: 2px solid var(--accent-line);
-  box-shadow: 0 0 0 6px var(--accent-soft); transition: filter 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  border: 2px solid var(--accent-line);
+  box-shadow: 0 0 0 6px var(--accent-soft); transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
 }
-.id-photo:hover { filter: grayscale(0); box-shadow: 0 0 0 7px var(--accent-soft); }
+.id-photo:hover { box-shadow: 0 0 0 7px var(--accent-soft); transform: scale(1.03); }
 .id-meta { display: flex; flex-direction: column; gap: 0.3rem; }
 .id-eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); }
 .id-name { font-family: var(--display); font-size: 1.6rem; line-height: 1.1; color: var(--ink); font-weight: 600; }
