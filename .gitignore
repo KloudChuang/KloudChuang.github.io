@@ -1,0 +1,6 @@
+# 防止私人/機密檔案被誤上傳
+.env
+.env.*
+專案筆記.md
+*NOTES*.md
+.DS_Store
