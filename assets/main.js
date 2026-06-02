@@ -122,20 +122,36 @@
     bars.forEach(function (b, i) { b.classList.toggle('on', i <= stage); });
   }
 
-  document.querySelectorAll('[data-steps]').forEach(function (col) {
-    var key = col.getAttribute('data-steps');
-    var steps = Array.prototype.slice.call(col.querySelectorAll('.step'));
-    var stepIO = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          steps.forEach(function (s) { s.classList.remove('is-active'); });
-          e.target.classList.add('is-active');
-          setStage(key, parseInt(e.target.getAttribute('data-stage'), 10));
-        }
-      });
-    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-    steps.forEach(function (s) { stepIO.observe(s); });
-  });
+  // Desktop: viz and steps sit side by side → trigger at viewport centre.
+  // Mobile (<=880px): the viz is pinned to the top ~56vh, steps read below it
+  // → move the trigger band down into the visible strip under the viz.
+  var stepCols = Array.prototype.slice.call(document.querySelectorAll('[data-steps]'));
+  var mqMobile = window.matchMedia('(max-width: 880px)');
+  var stepObservers = [];
+
+  function buildStepObservers() {
+    stepObservers.forEach(function (o) { o.disconnect(); });
+    stepObservers = [];
+    var margin = mqMobile.matches ? '-70% 0px -18% 0px' : '-45% 0px -45% 0px';
+    stepCols.forEach(function (col) {
+      var key = col.getAttribute('data-steps');
+      var steps = Array.prototype.slice.call(col.querySelectorAll('.step'));
+      var stepIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            steps.forEach(function (s) { s.classList.remove('is-active'); });
+            e.target.classList.add('is-active');
+            setStage(key, parseInt(e.target.getAttribute('data-stage'), 10));
+          }
+        });
+      }, { rootMargin: margin, threshold: 0 });
+      steps.forEach(function (s) { stepIO.observe(s); });
+      stepObservers.push(stepIO);
+    });
+  }
+  buildStepObservers();
+  if (mqMobile.addEventListener) mqMobile.addEventListener('change', buildStepObservers);
+  else if (mqMobile.addListener) mqMobile.addListener(buildStepObservers);
 
   /* ---- denoising text (Meta-DiffuB step 03) ---- */
   (function () {

@@ -265,10 +265,18 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 500; }
   border: 1px solid var(--hair); border-radius: 0 0 14px 14px;
   display: grid; grid-template-columns: 1.08fr 0.92fr;
 }
-@media (max-width: 880px) { .scrolly { grid-template-columns: 1fr; } }
+/* mobile: single column — the viz column itself becomes the sticky element,
+   so it can pin against the full height of .scrolly (its own row in the old
+   grid was only as tall as the viz, leaving sticky no room to work). */
+@media (max-width: 880px) { .scrolly { display: block; } }
 
 .viz-col { border-right: 1px solid var(--hair); }
-@media (max-width: 880px) { .viz-col { border-right: none; border-bottom: 1px solid var(--hair); } }
+@media (max-width: 880px) {
+  .viz-col {
+    border-right: none; border-bottom: 1px solid var(--hair);
+    position: sticky; top: 0; z-index: 4;
+  }
+}
 
 .viz-sticky {
   position: sticky; top: 9vh; height: 82vh; min-height: 460px;
@@ -278,7 +286,7 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 500; }
     linear-gradient(90deg, var(--grid-fine) 1px, transparent 1px), var(--paper-2);
   background-size: 24px 24px, 24px 24px, 100% 100%;
 }
-@media (max-width: 880px) { .viz-sticky { top: 7vh; height: 64vh; min-height: 380px; } }
+@media (max-width: 880px) { .viz-sticky { position: static; height: 56vh; min-height: 340px; } }
 
 .viz-hud {
   display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 1rem;
