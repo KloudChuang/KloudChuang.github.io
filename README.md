@@ -44,13 +44,6 @@ Engineering notes on my site — [**kloudchuang.github.io**](https://kloudchuang
 - 🛠️ **[Harness Engineering](https://kloudchuang.github.io/harness.html)** — keeping a long-running AI growth agent stable, observable, and self-improving.
 - 🤖 **[Building a Local Coding Agent](https://kloudchuang.github.io/local-agent.html)** — self-hosting a small model into a Claude-Code-level, privacy-first coding agent CLI.
 
-### 📊 GitHub stats
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=KloudChuang&show_icons=true&count_private=true&hide_border=true" alt="GitHub stats" height="165">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=KloudChuang&layout=compact&hide_border=true" alt="Top languages" height="165">
-</p>
-
 ### 📫 Contact
 
 - ✉️ Email: **yunyenchuang@maxora.ai**
