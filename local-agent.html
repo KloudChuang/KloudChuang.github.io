@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
+  <title>Building a Local Coding Agent · 單卡機、小模型、大奇蹟 — Notes · Yun-Yen Chuang</title>
+  <meta name="description" content="Engineering notes on building a local, privacy-first coding agent CLI at Claude-Code level: self-hosting a small model, solving the context problem, an async agent loop, and how each function is implemented. ｜ 如何用單張顯示卡自架地端小模型，打造接近 Claude Code 等級的本地 AI 編程代理 CLI：模型自架、上下文壓縮、非同步代理迴圈、各功能實作。By Yun-Yen Chuang, Maxora AI." />
+  <meta name="keywords" content="local LLM, self-hosted coding agent, small model, single GPU, Claude Code alternative, Ollama, context compaction, privacy AI coding, 地端模型, 本地大語言模型, 小模型, 單卡機, 自架 Claude Code, 本地 AI 編程助手, 上下文壓縮, 隱私 AI 編程, Ollama 本地模型, 非同步代理" />
+  <meta name="author" content="Yun-Yen Chuang (莊昀諺)" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://kloudchuang.github.io/local-agent.html" />
+  <meta name="theme-color" content="#fdfdfd" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Building a Local Coding Agent · 單卡機、小模型、大奇蹟" />
+  <meta property="og:description" content="Self-hosting a small model, solving the context window, an async agent loop, and how each function is implemented — notes on a Claude-Code-level local coding agent." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://kloudchuang.github.io/local-agent.html" />
+  <meta property="og:site_name" content="Yun-Yen Chuang" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="article:author" content="Yun-Yen Chuang" />
+  <meta property="og:image" content="https://kloudchuang.github.io/assets/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Yun-Yen Chuang (莊昀諺) — Founder & CEO @ Maxora AI, Data Scientist, Ph.D. NTU EE" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Building a Local Coding Agent · 單卡機、小模型、大奇蹟" />
+  <meta name="twitter:description" content="Self-hosting a small model, solving the context window, an async agent loop, and how each function is implemented — notes on a Claude-Code-level local coding agent." />
+  <meta name="twitter:image" content="https://kloudchuang.github.io/assets/og-cover.jpg" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Building a Local Coding Agent",
+    "description": "Engineering notes on building a local, privacy-first coding agent CLI at Claude-Code level: self-hosting a small model, the context problem, an async agent loop, and how each function is implemented.",
+    "url": "https://kloudchuang.github.io/local-agent.html",
+    "mainEntityOfPage": "https://kloudchuang.github.io/local-agent.html",
+    "inLanguage": "en",
+    "datePublished": "2026-06-18",
+    "dateModified": "2026-06-18",
+    "author": {
+      "@type": "Person",
+      "name": "Yun-Yen Chuang",
+      "url": "https://kloudchuang.github.io/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Maxora AI",
+      "url": "https://maxora.ai"
+    },
+    "about": "Local LLM inference, coding agents, context engineering, on-device privacy, agent harness design"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/harness.css" />
+
+  <!-- page-local helpers (kept here so shared CSS stays untouched) -->
+  <style>
+    .codeblock {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-x: auto;
+      background: var(--paper-2);
+      border: 1px solid oklch(0.5 0.02 235 / 0.16);
+      border-left: 3px solid var(--accent-line);
+      border-radius: 10px;
+      padding: 1.05rem 1.2rem;
+      margin: 1.4rem 0;
+      color: var(--ink-2);
+    }
+    .codeblock .c { color: var(--muted); }
+    .codeblock .k { color: var(--accent-deep); font-weight: 600; }
+    .flow {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      white-space: pre;
+      overflow-x: auto;
+      color: var(--ink-2);
+      background: var(--paper-2);
+      border: 1px dashed var(--accent-line);
+      border-radius: 10px;
+      padding: 1.1rem 1.2rem;
+      margin: 1.4rem 0;
+    }
+    .modtable { width: 100%; border-collapse: collapse; margin: 1.4rem 0; font-size: 0.92rem; }
+    .modtable th, .modtable td { text-align: left; padding: 0.6rem 0.7rem; border-bottom: 1px solid oklch(0.5 0.02 235 / 0.14); vertical-align: top; }
+    .modtable th { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-deep); }
+    .modtable td:first-child { font-family: var(--mono); color: var(--accent-ink); white-space: nowrap; font-size: 0.85rem; }
+    .modtable tr:hover td { background: var(--accent-soft); }
+    .toolset { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.4rem 0; }
+    .toolset span { font-family: var(--mono); font-size: 0.78rem; padding: 0.28rem 0.6rem; border-radius: 6px; border: 1px solid oklch(0.5 0.02 235 / 0.2); color: var(--ink-2); background: var(--paper-2); }
+    .toolset span.danger { border-color: var(--accent-line); color: var(--accent-deep); }
+    .checklist { list-style: none; padding: 0; margin: 1.2rem 0; display: grid; gap: 0.55rem; }
+    .checklist li { padding-left: 1.7rem; position: relative; color: var(--ink-2); }
+    .checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--accent-deep); font-weight: 700; }
+    .note-small { font-size: 0.85rem; color: var(--muted); }
+    .zh-tagline {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      letter-spacing: 0.12em;
+      color: var(--accent-deep);
+      margin: -0.4rem 0 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="paper-grid"></div>
+  <div class="paper-vignette"></div>
+  <span class="reg tl"></span><span class="reg tr"></span>
+  <span class="reg bl"></span><span class="reg br"></span>
+  <div class="scan" id="scan"></div>
+  <div class="readout">
+    <span><b id="roSect">00 / NOTES</b></span>
+    <span><span class="dot">▸</span> scroll <span id="roPct">000</span>%</span>
+  </div>
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <a class="brand" href="index.html"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
+    <div class="navlinks">
+      <a href="index.html" class="back-link">← back to home</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <!-- HERO -->
+    <header class="sub-hero" data-sect="00 / NOTES">
+      <p class="eyebrow reveal">
+        <span class="live"><span class="pulse"></span>ENGINEERING NOTES</span>
+        <span>·</span><span>LOCAL LLM · CODING AGENT</span>
+      </p>
+      <h1 class="reveal">A Local<br /><span class="ln2">Claude&nbsp;Code</span></h1>
+      <p class="zh-tagline reveal" lang="zh-Hant">單卡機 · 小模型 · 大奇蹟</p>
+      <p class="lede reveal">
+        Notes from building <em>Maxora</em> — a privacy-first coding agent where the source code never
+        leaves your laptop and only the “brain” runs on a self-hosted model. How to stand up a small
+        model from scratch, beat a tiny context window, and make a CLI that genuinely feels
+        <em>Claude-Code-level</em>: streaming, parallel tools, async input, self-verification.
+      </p>
+      <div class="status-row reveal">
+        <span class="live-tag"><span class="pulse-d"></span>in production</span>
+        <span>two-sided: local tools + remote inference</span>
+        <span>~32k window · 14 tools · async REPL</span>
+      </div>
+    </header>
+
+    <!-- 01 — the goal & architecture -->
+    <section class="sect" data-sect="01 / THE SHAPE">
+      <div class="sect-head reveal"><span class="idx">01</span><h2>Two sides: local hands, remote brain</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          The thesis is privacy without giving up capability. Your repository — the thing you actually
+          care about keeping private — never leaves the machine. Only the model's reasoning runs
+          elsewhere, on hardware <em>you</em> control. So the system splits cleanly in two:
+        </p>
+      </div>
+      <div class="flow reveal">your laptop                                   a GPU you own
+┌──────────────────────────┐   HTTP / VPN   ┌────────────────────────┐
+│  CLI: agent loop          │ ─────────────▶ │  proxy  (:11435)        │
+│  all tool execution       │                │  image compress         │
+│  read/write/run + (y/n)   │ ◀───stream──── │  concurrency            │
+└──────────────────────────┘                └───────────┬────────────┘
+        source never leaves                              ▼
+                                              Ollama  (:11434)  → local model</div>
+      <div class="prose reveal">
+        <p>
+          The model never touches the filesystem. It only emits OpenAI-format <code>tool_calls</code>;
+          the CLI executes them locally, gates anything dangerous behind a <code>y/n</code> prompt, and
+          feeds the results back. That single rule — <strong>the LLM proposes, the local client
+          disposes</strong> — is what makes a remote brain safe to use on private code.
+        </p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ why a proxy in front of the model</span>
+        <div class="prose">
+          <p>
+            Ollama already speaks an OpenAI-compatible API, so why not point the CLI straight at it? Because
+            a thin proxy is the right seam for the things that shouldn't live in either the model or the client:
+            compressing screenshots down to a few hundred pixels before they cost vision tokens, handling
+            concurrent requests, optional bearer auth, and a redundant truncation safety net. It stays a
+            near-transparent relay — the CLI owns the system prompt.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 — self-host the model -->
+    <section class="sect" data-sect="02 / SELF-HOST">
+      <div class="sect-head reveal"><span class="idx">02</span><h2>Standing up the model, end to end</h2><span class="rule"></span></div>
+      <p class="lede reveal">From bare GPU to an endpoint your CLI can call. The whole point of a <em>small</em> model is that this fits on one workstation card.</p>
+
+      <div class="path">
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 01</span>
+          <h4>Pick &amp; pull a coding model</h4>
+          <ul>
+            <li>A quantized open-weight coding model (the Qwen-Coder family is a strong default) — small enough for a single 24&nbsp;GB card.</li>
+            <li>Install Ollama; <code>ollama pull</code> the tag. It serves an OpenAI-compatible API on <code>:11434</code> immediately.</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 02</span>
+          <h4>Bake the context window</h4>
+          <ul>
+            <li>The OpenAI endpoint ignores a per-request <code>num_ctx</code>, so set it once in a Modelfile and build a derived model.</li>
+            <li>That's how you get a real 32k (or 128k) window instead of the small default.</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 03</span>
+          <h4>Front it with a proxy</h4>
+          <ul>
+            <li>A tiny threaded HTTP server intercepts <code>/chat/completions</code> to compress images and relay the stream.</li>
+            <li>Run it under systemd with <code>Restart=always</code> so it's always there — never launched by hand.</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 04</span>
+          <h4>Reach it privately</h4>
+          <ul>
+            <li>Expose the GPU only on a private network; the laptop reaches it over VPN.</li>
+            <li>The CLI discovers the model from <code>/v1/models</code> and pins it via an env override.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="codeblock reveal"><span class="c"># 1 · pull a small coding model</span>
+ollama pull <span class="k">qwen-coder</span>
+
+<span class="c"># 2 · bake a bigger window into a derived model (OpenAI API ignores per-request num_ctx)</span>
+<span class="c"># Modelfile</span>
+FROM qwen-coder
+PARAMETER num_ctx 32768
+
+ollama create <span class="k">my-coder</span> -f Modelfile
+
+<span class="c"># 3 · the proxy is a near-transparent relay: compress images, stream through</span>
+<span class="c">#    CLI :11435  ──▶  proxy  ──▶  Ollama :11434</span>
+systemctl <span class="k">enable</span> --now my-proxy</div>
+
+      <div class="callout reveal">
+        <span class="co-tag">▸ the 24&nbsp;GB trade-off you can't escape</span>
+        <div class="prose">
+          <p>
+            On one card you are spending a fixed VRAM budget across three things that all want it:
+            <strong>model precision</strong>, a <strong>vision projector</strong>, and the
+            <strong>KV-cache</strong> (your context window). You cannot max all three. A 27B dense model
+            with vision tops out around a 32k window; drop vision and a 35B quant will hold 128k. Choose by
+            workload: vision-heavy front-end work vs. huge multi-file refactors. There is no free lunch
+            here — pick the corner of the triangle your tasks actually live in.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 — the context problem -->
+    <section class="sect" data-sect="03 / CONTEXT">
+      <div class="sect-head reveal"><span class="idx">03</span><h2>The real problem: a tiny window</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          A frontier model gives you 200k+ tokens. A self-hosted small model gives you ~32k. That single
+          constraint is what separates a toy from something that survives a real session. <em>Context
+          engineering</em> — deciding what the model gets to see — is the bulk of the work. Six techniques
+          do the heavy lifting:
+        </p>
+      </div>
+      <div class="comp-grid">
+        <div class="comp-card reveal"><span class="cc-n">01</span><h4>Token-aware compaction</h4><p>Before each request, estimate tokens (CJK ≈ 1, else ≈ 4 chars/token) and, past a threshold, fold old turns into a model-written summary. Cut on <em>user-turn boundaries</em> so a <code>tool_call</code>/<code>tool</code> pair is never split.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">02</span><h4>Ranged reads, not whole files</h4><p>Cap <code>read_file</code> output, and give <code>grep</code> a <code>context</code> argument (N lines around each hit) so the model can locate and patch a large file without ever loading the whole thing.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">03</span><h4>Repo map</h4><p>At startup, statically extract signatures (functions, classes) and inject a compact <code>&lt;repo_map&gt;</code> — the model gets the shape of the codebase for a few hundred tokens instead of reading every file.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">04</span><h4>Sub-agents</h4><p>A <code>task</code> tool delegates broad, uncertain exploration to a fresh-context sub-agent. It burns <em>its own</em> window on grep + ranged reads and returns a concise summary, leaving the main window clean.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">05</span><h4>On-demand memory</h4><p>Only a small project guide is injected in full each session. Larger docs (CLAUDE.md / AGENTS.md) are listed by name and read on demand — a big doc never bloats the window.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">06</span><h4>Keep only the latest image</h4><p>Vision eats tokens. After a screenshot the newest image stays in context and older ones are stripped — so the agent can screenshot → fix → screenshot repeatedly without blowing the window.</p></div>
+      </div>
+      <div class="principle reveal">
+        <h4>Compaction is the one thing you never ask permission for.</h4>
+        <p>Every other irreversible action goes through a gate. Compaction can't — declining it would overflow the window and kill the turn. So it runs automatically, and the messages it summarises away are archived to disk first, in case you want them back.</p>
+      </div>
+    </section>
+
+    <!-- 04 — the loop & async -->
+    <section class="sect" data-sect="04 / THE LOOP">
+      <div class="sect-head reveal"><span class="idx">04</span><h2>The agent loop, and making it async</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          At its core every coding agent is one loop. The art is in what wraps it.
+        </p>
+      </div>
+      <div class="flow reveal">per step:
+  maybe_compact            <span class="c"># keep us under the window</span>
+  stream completion        <span class="c"># token-by-token, with retry/backoff on 5xx</span>
+  store assistant message  <span class="c"># &lt;think&gt; stripped from history</span>
+  if tool_calls:
+      execute_tool_calls   <span class="c"># read-only ones in parallel, dangerous ones serially</span>
+      append role:"tool"   <span class="c"># feed results back</span>
+      loop
+  else:
+      turn ends</div>
+      <div class="prose reveal">
+        <p>
+          Two details make the loop feel professional rather than fragile. <strong>Parallelism:</strong>
+          read-only tool calls from one turn run concurrently in a thread pool, results re-ordered to
+          match; only mutating calls are serialized. <strong>Resilience:</strong> connection errors and
+          5xx retry with exponential backoff (never 4xx). And while the model cold-loads, a live
+          <code>🧠 thinking… Ns</code> spinner proves it isn't frozen.
+        </p>
+      </div>
+
+      <div class="callout reveal">
+        <span class="co-tag">▸ async input — the Claude-Code feel</span>
+        <div class="callout-grid">
+          <div class="co-panel bad">
+            <h4>Synchronous REPL</h4>
+            <div class="mono-block">read input
+  → block on the agent
+  → read input</div>
+            <p class="co-out">→ You stare at a frozen prompt. Can't queue the next task, can't switch mode mid-run.</p>
+          </div>
+          <div class="co-panel good">
+            <h4>Async, background worker</h4>
+            <div class="mono-block">agent runs on a worker thread
+main thread keeps a live prompt
+  → queue the next task
+  → shift+tab mid-run</div>
+            <p class="co-out">→ Type while it works; tasks queue and run serially. It feels alive.</p>
+          </div>
+        </div>
+        <blockquote>The trick: there is exactly <span class="q">one input channel</span>.</blockquote>
+      </div>
+      <div class="prose reveal">
+        <p>
+          The agent runs on a background worker thread while the main thread holds a persistent
+          prompt under <code>patch_stdout</code>. New tasks <strong>queue</strong> and process serially.
+          The catch is the permission gate: it can no longer read <code>stdin</code> itself, because the
+          single live prompt owns the keyboard. So a <code>y/n/a</code> request routes <em>through</em>
+          that one channel via a <code>threading.Event</code> handshake — the prompt answers the gate.
+          Conversation-mutating commands (<code>/reset</code>, <code>/compact</code>, <code>/model</code>)
+          are blocked while the worker is busy. The synchronous REPL stays as an automatic fallback for
+          non-TTY / piped input.
+        </p>
+      </div>
+    </section>
+
+    <!-- 05 — the functions -->
+    <section class="sect" data-sect="05 / THE PARTS">
+      <div class="sect-head reveal"><span class="idx">05</span><h2>How each part is implemented</h2><span class="rule"></span></div>
+      <p class="lede reveal">One Python package, acyclic layers, every module reading settings late-bound so a single place can be monkeypatched. Each file owns one concern.</p>
+      <table class="modtable reveal">
+        <thead><tr><th>Module</th><th>Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td>config.py</td><td>All env settings + shared mutable state — the single monkeypatch point.</td></tr>
+          <tr><td>tools.py</td><td>The <code>@tool(...)</code> registry + tool implementations + read-tracking.</td></tr>
+          <tr><td>llm.py</td><td>Proxy client: streaming, <code>&lt;think&gt;</code> split, retry/backoff, model pick.</td></tr>
+          <tr><td>context.py</td><td>Token estimation + compaction on user-turn boundaries.</td></tr>
+          <tr><td>agent.py</td><td>System-prompt build, parallel <code>execute_tool_calls</code>, <code>run_tool_loop</code>.</td></tr>
+          <tr><td>repl.py</td><td>The REPL, slash commands, async worker, <code>main</code>.</td></tr>
+          <tr><td>permissions.py</td><td>The <code>y/n/a</code> gate, diff preview, deny-rule enforcement.</td></tr>
+          <tr><td>input_router.py</td><td>Single-channel turn queue + permission handshake for async mode.</td></tr>
+          <tr><td>subagent.py</td><td>The <code>task</code> tool — fresh-context, depth-capped delegation.</td></tr>
+          <tr><td>repomap.py</td><td>Static signature extraction → <code>&lt;repo_map&gt;</code> injection.</td></tr>
+          <tr><td>maxora_md.py</td><td>Per-project guide: <code>/init</code> generation + auto-refresh.</td></tr>
+          <tr><td>hooks.py / mcp.py</td><td>Pre/Post/Stop shell hooks; a minimal MCP stdio JSON-RPC client.</td></tr>
+          <tr><td>prompt_ui.py</td><td>prompt_toolkit input: <code>/</code> menu, <code>@</code> file complete, shift+tab, toolbar.</td></tr>
+          <tr><td>session.py / gitops.py / editor.py / checks.py / display.py</td><td>Persistence · git ops · VS Code open · syntax/test checks · Rich panels.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="prose reveal">
+        <p>
+          <strong>Tools are one decorator.</strong> A single <code>@tool(name, description, properties,
+          required=, dangerous=)</code> binds the OpenAI schema, the implementation, and the danger flag
+          into one registry. Adding a tool means decorating one function — nothing else to sync. The
+          registry is live, so tools registered after import (sub-agent, MCP servers) appear automatically.
+          The fourteen:
+        </p>
+      </div>
+      <div class="toolset reveal">
+        <span>list_dir</span><span>read_file</span><span>glob</span><span>grep</span><span>web_fetch</span>
+        <span>web_search</span><span>todo_write</span><span>task</span><span>screenshot</span>
+        <span class="danger">write_file ⚠</span><span class="danger">patch_file ⚠</span><span class="danger">multi_edit ⚠</span>
+        <span class="danger">run_command ⚠</span><span class="danger">download_file ⚠</span>
+      </div>
+      <p class="note-small reveal">Read-only tools run with no confirmation; the five <code>⚠</code> tools are <code>dangerous=True</code> and pass through the permission gate. <code>multi_edit</code> applies several patches to one file atomically; <code>patch_file</code> refuses a non-unique match; <code>run_command</code> can run in the background; <code>screenshot</code> renders local HTML headless and feeds the PNG back so the model can review its own UI.</p>
+    </section>
+
+    <!-- 06 — safety & reliability -->
+    <section class="sect" data-sect="06 / SAFETY">
+      <div class="sect-head reveal"><span class="idx">06</span><h2>What keeps a small model honest</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          A 27B model is capable but it over-claims — it will say “done” without calling a tool, or
+          rewrite a whole file and stall at 80% of the window. The harness, not the weights, is what
+          makes it reliable. Layered defences:
+        </p>
+      </div>
+      <div class="comp-grid">
+        <div class="comp-card reveal"><span class="cc-n">01</span><h4>Read before edit</h4><p>Patching or overwriting an existing file is rejected unless it was read this session. Creating a new file needs no read.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">02</span><h4>Permission modes</h4><p><code>default / acceptEdits / plan / yolo</code>, switched live with shift+tab. <code>plan</code> blocks every mutation so the agent designs without acting.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">03</span><h4>Deny rules</h4><p>Path globs (<code>.env</code>, <code>*.pem</code>, <code>**/.git/**</code>) are enforced at the tool layer — they block even under <code>yolo</code>. A security rule, not a prompt.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">04</span><h4>Auto-verify</h4><p>After edits, one extra turn makes the model grep/read-check that every change it claimed actually exists — catching over-claimed completion.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">05</span><h4>Auto-check</h4><p>Changed files are syntax-checked (or run through your test/lint command); on failure the error is fed back and the agent fixes it, up to a cap.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">06</span><h4>Large-file guard</h4><p>Whole-rewriting a big existing file is refused (it thrashes the window); the model is steered to <code>multi_edit</code>/<code>patch_file</code> instead.</p></div>
+      </div>
+      <div class="principle reveal">
+        <h4>The “said it, didn't do it” nudge.</h4>
+        <p>The classic small-model failure: the model writes “I'll add that file now” and then ends the turn without calling a tool. A dedicated nudge detects stated-intent-without-tool-call and prompts it to actually do the thing — capped so it can't loop forever. Every executed tool is also appended to an audit log, and every edit pushes its prior content to an undo stack.</p>
+      </div>
+    </section>
+
+    <!-- 07 — parity -->
+    <section class="sect" data-sect="07 / PARITY">
+      <div class="sect-head reveal"><span class="idx">07</span><h2>What makes it feel Claude-Code-level</h2><span class="rule"></span></div>
+      <p class="lede reveal">“Same level” isn't the model — it's the dozen affordances around it that you stop noticing because they just work.</p>
+      <ul class="checklist reveal">
+        <li>Token-by-token streaming, with reasoning split out and a live thinking timer.</li>
+        <li>Parallel read-only tools; resilient retry on transient failures.</li>
+        <li>Async persistent input — queue tasks, switch mode mid-run.</li>
+        <li>Real context compaction on safe boundaries, with archived backups.</li>
+        <li>Diff preview before every edit; read-before-edit; an undo stack.</li>
+        <li>Permission modes, deny rules, and a full audit log.</li>
+        <li>Sub-agents, a project guide, MCP servers, and shell hooks.</li>
+        <li>Self-verification and auto-syntax/test checks that close the loop without a human.</li>
+        <li>Vision: drop a screenshot in, or let the agent render and review its own UI.</li>
+        <li>Sessions you can <code>--resume</code>; a polished prompt-toolkit input with a slash-command menu.</li>
+      </ul>
+    </section>
+
+    <!-- 08 — closing -->
+    <section class="sect" data-sect="08 / THE POINT">
+      <div class="sect-head reveal"><span class="idx">08</span><h2>The point</h2><span class="rule"></span></div>
+      <p class="closing-quote reveal">The model is the smaller half. The <span class="q">harness is the product</span>.</p>
+      <p class="lede closing-sub reveal">
+        A self-hosted small model will never out-reason a frontier model on raw IQ. It doesn't have to.
+        Wrapped in a harness that manages its context, parallelises its tools, verifies its own work, and
+        keeps your source on your own machine, it becomes something a frontier API can't be: private,
+        owned, and free to run all day. That's the bar I built Maxora toward — Claude-Code-level
+        ergonomics on hardware you control.
+      </p>
+      <p class="ref-note reveal">
+        Companion to my <a href="harness.html">Harness Engineering</a> notes — this is the same philosophy
+        applied to a local coding agent rather than a growth agent.
+      </p>
+    </section>
+
+    <footer>
+      <span>© <span id="year">2026</span> YUN-YEN CHUANG</span>
+      <span><a href="index.html" style="color:var(--accent-deep)">← back to home</a></span>
+    </footer>
+  </main>
+
+  <script src="assets/main.js"></script>
+</body>
+</html>
