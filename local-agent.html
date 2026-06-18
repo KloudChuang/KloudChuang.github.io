@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>document.documentElement.classList.add('js');</script>
   <title>Building a Local Coding Agent · 單卡機、小模型、大奇蹟 — Notes · Yun-Yen Chuang</title>
-  <meta name="description" content="Engineering notes on building a local, privacy-first coding agent CLI at Claude-Code level: self-hosting a small model, solving the context problem, an async agent loop, and how each function is implemented. ｜ 如何用單張顯示卡自架地端小模型，打造接近 Claude Code 等級的本地 AI 編程代理 CLI：模型自架、上下文壓縮、非同步代理迴圈、各功能實作。By Yun-Yen Chuang, Maxora AI." />
+  <meta name="description" content="Engineering notes on building a local, privacy-first coding agent CLI at Claude-Code level: self-hosting a small model, solving the context problem, an async agent loop, and how the system is structured. ｜ 如何用單張顯示卡自架地端小模型，打造接近 Claude Code 等級的本地 AI 編程代理 CLI：模型自架、上下文壓縮、非同步代理迴圈、整體架構設計。By Yun-Yen Chuang, Maxora AI." />
   <meta name="keywords" content="local LLM, self-hosted coding agent, small model, single GPU, Claude Code alternative, Ollama, context compaction, privacy AI coding, 地端模型, 本地大語言模型, 小模型, 單卡機, 自架 Claude Code, 本地 AI 編程助手, 上下文壓縮, 隱私 AI 編程, Ollama 本地模型, 非同步代理" />
   <meta name="author" content="Yun-Yen Chuang (莊昀諺)" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
@@ -44,7 +44,7 @@
     "@context": "https://schema.org",
     "@type": "TechArticle",
     "headline": "Building a Local Coding Agent",
-    "description": "Engineering notes on building a local, privacy-first coding agent CLI at Claude-Code level: self-hosting a small model, the context problem, an async agent loop, and how each function is implemented.",
+    "description": "Engineering notes on building a local, privacy-first coding agent CLI at Claude-Code level: self-hosting a small model, the context problem, an async agent loop, and how the system is structured.",
     "url": "https://kloudchuang.github.io/local-agent.html",
     "mainEntityOfPage": "https://kloudchuang.github.io/local-agent.html",
     "inLanguage": "en",
@@ -306,15 +306,15 @@ systemctl <span class="k">enable</span> --now my-proxy</div>
         </p>
       </div>
       <div class="flow reveal">per step:
-  maybe_compact            <span class="c"># keep us under the window</span>
-  stream completion        <span class="c"># token-by-token, with retry/backoff on 5xx</span>
-  store assistant message  <span class="c"># &lt;think&gt; stripped from history</span>
-  if tool_calls:
-      execute_tool_calls   <span class="c"># read-only ones in parallel, dangerous ones serially</span>
-      append role:"tool"   <span class="c"># feed results back</span>
+  compact if near the limit   <span class="c"># keep us under the window</span>
+  stream the completion       <span class="c"># token-by-token, with retry/backoff on 5xx</span>
+  store the assistant message <span class="c"># reasoning stripped from history</span>
+  if there are tool calls:
+      run them                <span class="c"># read-only ones in parallel, dangerous ones serially</span>
+      feed the results back    <span class="c"># as tool messages</span>
       loop
   else:
-      turn ends</div>
+      the turn ends</div>
       <div class="prose reveal">
         <p>
           Two details make the loop feel professional rather than fragile. <strong>Parallelism:</strong>
@@ -348,49 +348,45 @@ main thread keeps a live prompt
       </div>
       <div class="prose reveal">
         <p>
-          The agent runs on a background worker thread while the main thread holds a persistent
-          prompt under <code>patch_stdout</code>. New tasks <strong>queue</strong> and process serially.
-          The catch is the permission gate: it can no longer read <code>stdin</code> itself, because the
-          single live prompt owns the keyboard. So a <code>y/n/a</code> request routes <em>through</em>
-          that one channel via a <code>threading.Event</code> handshake — the prompt answers the gate.
-          Conversation-mutating commands (<code>/reset</code>, <code>/compact</code>, <code>/model</code>)
-          are blocked while the worker is busy. The synchronous REPL stays as an automatic fallback for
-          non-TTY / piped input.
+          The agent runs on a background worker thread while the main thread keeps a persistent prompt
+          alive. New tasks <strong>queue</strong> and process serially. The subtle part is the permission
+          gate: it can no longer read the keyboard itself, because the single live prompt already owns it.
+          So a <code>y/n/a</code> request routes <em>through</em> that one channel — the prompt answers the
+          gate. Conversation-mutating commands (<code>/reset</code>, <code>/compact</code>,
+          <code>/model</code>) are blocked while the worker is busy, and the synchronous loop stays as an
+          automatic fallback for non-interactive input. The lesson generalises: <em>one</em> input
+          channel, everything negotiates through it.
         </p>
       </div>
     </section>
 
     <!-- 05 — the functions -->
     <section class="sect" data-sect="05 / THE PARTS">
-      <div class="sect-head reveal"><span class="idx">05</span><h2>How each part is implemented</h2><span class="rule"></span></div>
-      <p class="lede reveal">One Python package, acyclic layers, every module reading settings late-bound so a single place can be monkeypatched. Each file owns one concern.</p>
+      <div class="sect-head reveal"><span class="idx">05</span><h2>How it's structured</h2><span class="rule"></span></div>
+      <p class="lede reveal">The system separates into a handful of concerns, each isolated so it can be reasoned about — and swapped — on its own. The shape, not the source:</p>
       <table class="modtable reveal">
-        <thead><tr><th>Module</th><th>Responsibility</th></tr></thead>
+        <thead><tr><th>Concern</th><th>What it owns</th></tr></thead>
         <tbody>
-          <tr><td>config.py</td><td>All env settings + shared mutable state — the single monkeypatch point.</td></tr>
-          <tr><td>tools.py</td><td>The <code>@tool(...)</code> registry + tool implementations + read-tracking.</td></tr>
-          <tr><td>llm.py</td><td>Proxy client: streaming, <code>&lt;think&gt;</code> split, retry/backoff, model pick.</td></tr>
-          <tr><td>context.py</td><td>Token estimation + compaction on user-turn boundaries.</td></tr>
-          <tr><td>agent.py</td><td>System-prompt build, parallel <code>execute_tool_calls</code>, <code>run_tool_loop</code>.</td></tr>
-          <tr><td>repl.py</td><td>The REPL, slash commands, async worker, <code>main</code>.</td></tr>
-          <tr><td>permissions.py</td><td>The <code>y/n/a</code> gate, diff preview, deny-rule enforcement.</td></tr>
-          <tr><td>input_router.py</td><td>Single-channel turn queue + permission handshake for async mode.</td></tr>
-          <tr><td>subagent.py</td><td>The <code>task</code> tool — fresh-context, depth-capped delegation.</td></tr>
-          <tr><td>repomap.py</td><td>Static signature extraction → <code>&lt;repo_map&gt;</code> injection.</td></tr>
-          <tr><td>maxora_md.py</td><td>Per-project guide: <code>/init</code> generation + auto-refresh.</td></tr>
-          <tr><td>hooks.py / mcp.py</td><td>Pre/Post/Stop shell hooks; a minimal MCP stdio JSON-RPC client.</td></tr>
-          <tr><td>prompt_ui.py</td><td>prompt_toolkit input: <code>/</code> menu, <code>@</code> file complete, shift+tab, toolbar.</td></tr>
-          <tr><td>session.py / gitops.py / editor.py / checks.py / display.py</td><td>Persistence · git ops · VS Code open · syntax/test checks · Rich panels.</td></tr>
+          <tr><td>Settings &amp; state</td><td>One source of truth for configuration and shared runtime state.</td></tr>
+          <tr><td>Tool registry</td><td>Each tool's schema, implementation, and danger flag, bound together in one place.</td></tr>
+          <tr><td>Model client</td><td>Streaming, reasoning split, retry/backoff, model selection.</td></tr>
+          <tr><td>Context manager</td><td>Token estimation and compaction on safe boundaries.</td></tr>
+          <tr><td>Agent core</td><td>System-prompt assembly, parallel tool execution, the loop itself.</td></tr>
+          <tr><td>REPL &amp; input</td><td>The command surface, the async worker, and a single input channel.</td></tr>
+          <tr><td>Permission layer</td><td>The <code>y/n/a</code> gate, diff preview, and deny-rule enforcement.</td></tr>
+          <tr><td>Delegation</td><td>Fresh-context sub-agents that isolate their own token usage.</td></tr>
+          <tr><td>Project awareness</td><td>A static repo map and an auto-read per-project guide.</td></tr>
+          <tr><td>Extensibility</td><td>Shell hooks and external tool servers (MCP).</td></tr>
+          <tr><td>Plumbing</td><td>Sessions, git ops, editor integration, syntax/test checks, terminal UI.</td></tr>
         </tbody>
       </table>
 
       <div class="prose reveal">
         <p>
-          <strong>Tools are one decorator.</strong> A single <code>@tool(name, description, properties,
-          required=, dangerous=)</code> binds the OpenAI schema, the implementation, and the danger flag
-          into one registry. Adding a tool means decorating one function — nothing else to sync. The
-          registry is live, so tools registered after import (sub-agent, MCP servers) appear automatically.
-          The fourteen:
+          <strong>Tools are one declaration.</strong> A single decorator binds a tool's schema, its
+          implementation, and whether it's dangerous into one live registry — adding a tool is decorating
+          one function, nothing else to keep in sync. Because the registry is live, capabilities added at
+          runtime (a sub-agent, an external tool server) appear automatically. The working set:
         </p>
       </div>
       <div class="toolset reveal">
