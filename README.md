@@ -1,7 +1,7 @@
 <h1 align="center">Hi, I'm Yun-Yen Chuang 👋</h1>
 
 <p align="center">
-  <b>Founder & CEO @ Maxora AI</b> · <b>Ph.D. @ National Taiwan University (EE)</b><br>
+  <b>Founder & CEO @ Maxora AI</b> · <b>Data Scientist</b> · <b>Ph.D. @ National Taiwan University (EE)</b><br>
   Meta-Learning · Reinforcement Learning · Adversarial Learning · NLG & Diffusion Models
 </p>
 
@@ -37,6 +37,13 @@
 
 > A common thread in my work: a **scheduler/explorer–exploiter** framework inspired by **Meta Exploration** that learns *how to sample or schedule noise* rather than fixing it by hand.
 
+### ✍️ Writing & notes
+
+Engineering notes on my site — [**kloudchuang.github.io**](https://kloudchuang.github.io):
+
+- 🛠️ **[Harness Engineering](https://kloudchuang.github.io/harness.html)** — keeping a long-running AI growth agent stable, observable, and self-improving.
+- 🤖 **[Building a Local Coding Agent](https://kloudchuang.github.io/local-agent.html)** — self-hosting a small model into a Claude-Code-level, privacy-first coding agent CLI.
+
 ### 📊 GitHub stats
 
 <p align="center">
@@ -47,7 +54,7 @@
 ### 📫 Contact
 
 - ✉️ Email: **yunyenchuang@maxora.ai**
-- 🎓 Google Scholar: **[your profile](https://scholar.google.com/)** <!-- TODO: replace with your real Scholar URL -->
+- 🎓 Google Scholar: **[Yun-Yen Chuang](https://scholar.google.com/citations?user=5BJ63mUAAAAJ&hl=en)**
 
 ---
 
