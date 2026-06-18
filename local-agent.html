@@ -175,12 +175,12 @@
       </div>
       <div class="flow reveal">your laptop                                   a GPU you own
 ┌──────────────────────────┐   HTTP / VPN   ┌────────────────────────┐
-│  CLI: agent loop          │ ─────────────▶ │  proxy  (:11435)        │
+│  CLI: agent loop          │ ─────────────▶ │  proxy                  │
 │  all tool execution       │                │  image compress         │
 │  read/write/run + (y/n)   │ ◀───stream──── │  concurrency            │
 └──────────────────────────┘                └───────────┬────────────┘
         source never leaves                              ▼
-                                              Ollama  (:11434)  → local model</div>
+                                              Ollama  → local model</div>
       <div class="prose reveal">
         <p>
           The model never touches the filesystem. It only emits OpenAI-format <code>tool_calls</code>;
@@ -214,7 +214,7 @@
           <h4>Pick &amp; pull a coding model</h4>
           <ul>
             <li>A quantized open-weight coding model (the Qwen-Coder family is a strong default) — small enough for a single 24&nbsp;GB card.</li>
-            <li>Install Ollama; <code>ollama pull</code> the tag. It serves an OpenAI-compatible API on <code>:11434</code> immediately.</li>
+            <li>Install Ollama; <code>ollama pull</code> the tag. It serves an OpenAI-compatible API immediately.</li>
           </ul>
         </div>
         <div class="path-week reveal">
@@ -254,7 +254,7 @@ PARAMETER num_ctx 32768
 ollama create <span class="k">my-coder</span> -f Modelfile
 
 <span class="c"># 3 · the proxy is a near-transparent relay: compress images, stream through</span>
-<span class="c">#    CLI :11435  ──▶  proxy  ──▶  Ollama :11434</span>
+<span class="c">#    CLI  ──▶  proxy  ──▶  Ollama</span>
 systemctl <span class="k">enable</span> --now my-proxy</div>
 
       <div class="callout reveal">
