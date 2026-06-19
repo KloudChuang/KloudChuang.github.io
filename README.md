@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  🌐 <b><a href="https://kloudchuang.github.io">kloudchuang.github.io</a></b>
+  🌐 <b><a href="https://yunyenchuang.com">yunyenchuang.com</a></b>
 </p>
 
 ---
@@ -39,10 +39,10 @@
 
 ### ✍️ Writing & notes
 
-Engineering notes on my site — [**kloudchuang.github.io**](https://kloudchuang.github.io):
+Engineering notes on my site — [**yunyenchuang.com**](https://yunyenchuang.com):
 
-- 🛠️ **[Harness Engineering](https://kloudchuang.github.io/harness.html)** — keeping a long-running AI growth agent stable, observable, and self-improving.
-- 🤖 **[Building a Local Coding Agent](https://kloudchuang.github.io/local-agent.html)** — self-hosting a small model into a Claude-Code-level, privacy-first coding agent CLI.
+- 🛠️ **[Harness Engineering](https://yunyenchuang.com/harness.html)** — keeping a long-running AI growth agent stable, observable, and self-improving.
+- 🤖 **[Building a Local Coding Agent](https://yunyenchuang.com/local-agent.html)** — self-hosting a small model into a Claude-Code-level, privacy-first coding agent CLI.
 
 ### 📫 Contact
 
