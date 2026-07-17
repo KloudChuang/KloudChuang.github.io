@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
+  <title>Building an Image-Gen System to Rival Gemini · 從零打造對標 Gemini 的生圖系統 — Notes · Yun-Yen Chuang</title>
+  <meta name="description" content="Engineering notes on building a self-hosted image-generation system with Gemini-class capability — multi-reference identity-preserving compositing, instruction editing, and strong in-image text — running on consumer 24GB GPUs, OpenAI-compatible, from scratch. Includes the failed two-model attempt and the debugging lessons. ｜ 如何用消費級顯卡從零自架一套對標 Gemini 的生圖系統:多圖身份保留融合、指令式編輯、圖內文字渲染,單機收斂成一顆模型、OpenAI 相容。含兩模型分離的失敗經驗與踩雷。By Yun-Yen Chuang, Maxora AI." />
+  <meta name="keywords" content="image generation, self-hosted diffusion, Gemini alternative, identity-preserving compositing, instruction editing, text-to-image, consumer GPU, 24GB, ComfyUI, OpenAI-compatible image API, 生圖系統, 對標 Gemini, 地端生圖, 多圖融合, 身份保留, 指令式編輯, 消費級顯卡, 自架擴散模型, 圖內文字渲染" />
+  <meta name="author" content="Yun-Yen Chuang (莊昀諺)" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://yunyenchuang.com/image-gen.html" />
+  <meta name="theme-color" content="#fdfdfd" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Building an Image-Gen System to Rival Gemini · 從零打造對標 Gemini 的生圖系統" />
+  <meta property="og:description" content="Multi-reference identity-preserving compositing, instruction editing, and strong in-image text — Gemini-class image generation, self-hosted on consumer GPUs. The failed first attempt, the one-model insight, and the serving layer." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://yunyenchuang.com/image-gen.html" />
+  <meta property="og:site_name" content="Yun-Yen Chuang" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="article:author" content="Yun-Yen Chuang" />
+  <meta property="og:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Yun-Yen Chuang (莊昀諺) — Founder & CEO @ Maxora AI, Data Scientist, Ph.D. NTU EE" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Building an Image-Gen System to Rival Gemini · 從零打造對標 Gemini 的生圖系統" />
+  <meta name="twitter:description" content="Multi-reference identity-preserving compositing, instruction editing, and strong in-image text — Gemini-class image generation, self-hosted on consumer GPUs, from scratch." />
+  <meta name="twitter:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Building an Image-Gen System to Rival Gemini",
+    "description": "Engineering notes on building a self-hosted image-generation system with Gemini-class capability — multi-reference identity-preserving compositing, instruction editing, and strong in-image text — on consumer GPUs, OpenAI-compatible, from scratch.",
+    "url": "https://yunyenchuang.com/image-gen.html",
+    "mainEntityOfPage": "https://yunyenchuang.com/image-gen.html",
+    "inLanguage": "en",
+    "datePublished": "2026-07-17",
+    "dateModified": "2026-07-17",
+    "author": {
+      "@type": "Person",
+      "name": "Yun-Yen Chuang",
+      "url": "https://yunyenchuang.com/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Maxora AI",
+      "url": "https://maxora.ai"
+    },
+    "about": "Self-hosted image generation, diffusion serving, identity-preserving compositing, instruction editing, consumer-GPU inference, image API design"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/harness.css" />
+
+  <!-- page-local helpers (kept here so shared CSS stays untouched) -->
+  <style>
+    .codeblock {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-x: auto;
+      background: var(--paper-2);
+      border: 1px solid oklch(0.5 0.02 235 / 0.16);
+      border-left: 3px solid var(--accent-line);
+      border-radius: 10px;
+      padding: 1.05rem 1.2rem;
+      margin: 1.4rem 0;
+      color: var(--ink-2);
+    }
+    .codeblock .c { color: var(--muted); }
+    .codeblock .k { color: var(--accent-deep); font-weight: 600; }
+    .flow {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      white-space: pre;
+      overflow-x: auto;
+      color: var(--ink-2);
+      background: var(--paper-2);
+      border: 1px dashed var(--accent-line);
+      border-radius: 10px;
+      padding: 1.1rem 1.2rem;
+      margin: 1.4rem 0;
+    }
+    .modtable { width: 100%; border-collapse: collapse; margin: 1.4rem 0; font-size: 0.92rem; }
+    .modtable th, .modtable td { text-align: left; padding: 0.6rem 0.7rem; border-bottom: 1px solid oklch(0.5 0.02 235 / 0.14); vertical-align: top; }
+    .modtable th { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-deep); }
+    .modtable td:first-child { font-family: var(--mono); color: var(--accent-ink); white-space: nowrap; font-size: 0.85rem; }
+    .modtable tr:hover td { background: var(--accent-soft); }
+    .toolset { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.4rem 0; }
+    .toolset span { font-family: var(--mono); font-size: 0.78rem; padding: 0.28rem 0.6rem; border-radius: 6px; border: 1px solid oklch(0.5 0.02 235 / 0.2); color: var(--ink-2); background: var(--paper-2); }
+    .toolset span.danger { border-color: var(--accent-line); color: var(--accent-deep); }
+    .checklist { list-style: none; padding: 0; margin: 1.2rem 0; display: grid; gap: 0.55rem; }
+    .checklist li { padding-left: 1.7rem; position: relative; color: var(--ink-2); }
+    .checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--accent-deep); font-weight: 700; }
+    .note-small { font-size: 0.85rem; color: var(--muted); }
+    .zh-tagline {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      letter-spacing: 0.12em;
+      color: var(--accent-deep);
+      margin: -0.4rem 0 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="paper-grid"></div>
+  <div class="paper-vignette"></div>
+  <span class="reg tl"></span><span class="reg tr"></span>
+  <span class="reg bl"></span><span class="reg br"></span>
+  <div class="scan" id="scan"></div>
+  <div class="readout">
+    <span><b id="roSect">00 / NOTES</b></span>
+    <span><span class="dot">▸</span> scroll <span id="roPct">000</span>%</span>
+  </div>
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <a class="brand" href="index.html"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
+    <div class="navlinks">
+      <a href="index.html" class="back-link">← back to home</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <!-- HERO -->
+    <header class="sub-hero" data-sect="00 / NOTES">
+      <p class="eyebrow reveal">
+        <span class="live"><span class="pulse"></span>ENGINEERING NOTES</span>
+        <span>·</span><span>IMAGE GENERATION · SELF-HOSTED</span>
+      </p>
+      <h1 class="reveal">Rivalling<br /><span class="ln2">Gemini's&nbsp;Images</span></h1>
+      <p class="zh-tagline reveal" lang="zh-Hant">從零打造 · 對標 Gemini 的地端生圖</p>
+      <p class="lede reveal">
+        Notes from building an image-generation system that reaches for what a frontier model like
+        <em>Gemini</em> does best — feed it a face, a logo and a product, and it composites them into one
+        coherent scene while keeping every identity intact; ask in plain language and it edits rather than
+        repaints; it renders readable text <em>inside</em> the image. All of it self-hosted on consumer
+        GPUs, OpenAI-compatible, and owned end to end. This is how I got there — including the wrong turn I
+        took first.
+      </p>
+      <div class="status-row reveal">
+        <span class="live-tag"><span class="pulse-d"></span>in production</span>
+        <span>one model · generate · edit · composite</span>
+        <span>24&nbsp;GB cards · OpenAI-compatible · a queue in front</span>
+      </div>
+    </header>
+
+    <!-- 01 — the target -->
+    <section class="sect" data-sect="01 / THE TARGET">
+      <div class="sect-head reveal"><span class="idx">01</span><h2>What “matching Gemini” actually means</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          “Rival Gemini” is easy to say and slippery to pin down. Plenty of open models make a pretty
+          picture from a prompt — that part is basically solved. The thing that makes a frontier image
+          model feel like a different <em>category</em> is not raw text-to-image. It's four capabilities,
+          and they're the actual target:
+        </p>
+      </div>
+      <div class="comp-grid">
+        <div class="comp-card reveal"><span class="cc-n">01</span><h4>Multi-reference compositing</h4><p>Hand it several images — a person, a brand mark, a product — and get back one scene that fuses them, relit and re-posed, instead of a collage.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">02</span><h4>Identity preservation</h4><p>The person still looks like <em>that</em> person; the logo is still the logo. Compositing without identity drift is the hard half.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">03</span><h4>Instruction editing</h4><p>“Make it dusk,” “add a sign that says OPEN” — it edits the given image rather than hallucinating a new one from scratch.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">04</span><h4>Text that reads</h4><p>Legible words rendered inside the image — a neon sign, a poster headline — not the melted glyph-soup older models produce.</p></div>
+      </div>
+      <div class="prose reveal">
+        <p>
+          Add the constraints I actually cared about — it must run on hardware <em>I</em> own (consumer
+          24&nbsp;GB cards, not a rented cluster), speak an <strong>OpenAI-compatible</strong> API so
+          anything can call it, and never send a customer's face to someone else's server — and the target
+          is clear. The rest of these notes is how a system reaches those four bars from a bare GPU.
+        </p>
+      </div>
+    </section>
+
+    <!-- 02 — the wrong turn -->
+    <section class="sect" data-sect="02 / THE WRONG TURN">
+      <div class="sect-head reveal"><span class="idx">02</span><h2>The wrong turn: two models</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          The obvious first architecture is to use the right tool for each job. So I ran <strong>two</strong>
+          specialists: a fast turbo text-to-image model — <em>Z-Image-Turbo</em> — for “make a picture from a
+          prompt,” and a separate editing model for “change this picture.” Each was excellent in isolation.
+          Together they were a mistake, for two reasons that only show up once real users touch it.
+        </p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ why the two-model split failed</span>
+        <div class="callout-grid">
+          <div class="co-panel bad">
+            <h4>VRAM thrashing</h4>
+            <div class="mono-block">generate → load model A
+edit     → unload A, load B
+generate → unload B, load A …</div>
+            <p class="co-out">→ On one 24&nbsp;GB card only one model fits at a time. Every switch between “generate” and “edit” meant a 20–60s reload. Interactive work died in the swap.</p>
+          </div>
+          <div class="co-panel bad">
+            <h4>Mis-routing</h4>
+            <div class="mono-block">“put a hat on him”
+  → routed to text-to-image
+  → repaints a brand-new person</div>
+            <p class="co-out">→ Free-form requests don't announce which model they want. An edit intent would land on the txt2img path and cheerfully throw the user's image away.</p>
+          </div>
+        </div>
+        <blockquote>Two great models glued together made a <span class="q">worse</span> product than one.</blockquote>
+      </div>
+      <div class="prose reveal">
+        <p>
+          Z-Image earned its retirement honestly — it's a genuinely good turbo generator. But the split
+          itself was the flaw. The lesson pointed straight at how the frontier does it: not a router in
+          front of specialists, but <strong>one model that does everything</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- 03 — one model -->
+    <section class="sect" data-sect="03 / ONE MODEL">
+      <div class="sect-head reveal"><span class="idx">03</span><h2>The insight: one model, conditioned on 0…N images</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          A frontier image model isn't a text-to-image model with an editor bolted on. It's a single model
+          that takes a prompt <em>and</em> some number of reference images — zero, one, or several — and
+          produces an image conditioned on all of them. Text-to-image is just the zero-reference case of
+          the same machine. That reframing is the whole method:
+        </p>
+      </div>
+      <div class="flow reveal">references:  0        →  text-to-image   (generate)
+             1        →  edit this image (edit)
+             2 … 3    →  fuse these      (composite / poster)
+
+                    ┌─────────────────────────────┐
+   prompt  ───────▶ │   one instruction-edit model │ ──▶ image
+   images 0..N ───▶ │   (empty canvas when N = 0)  │
+                    └─────────────────────────────┘</div>
+      <div class="prose reveal">
+        <p>
+          The non-obvious part: an <em>editing</em> model can generate from nothing at all. Give it an
+          empty canvas of the target size plus a few-step distilled sampler, and it produces
+          text-to-image output that's as good as the specialist I retired — with noticeably stronger
+          in-image text. So one open-weight instruction-edit model, quantized to fit the card, now covers
+          all three modes. No router. No reload. One thing to load, keep hot, and reason about.
+        </p>
+      </div>
+      <div class="principle reveal">
+        <h4>Collapse the modes, don't route between them.</h4>
+        <p>Every switch you can remove is a class of bugs and a chunk of latency you never have to handle. The generate / edit / composite distinction is a detail of how many images you attach — not three different models. Verify the unified path on real prompts first, <em>then</em> delete the specialists.</p>
+      </div>
+    </section>
+
+    <!-- 04 — identity -->
+    <section class="sect" data-sect="04 / IDENTITY">
+      <div class="sect-head reveal"><span class="idx">04</span><h2>How identity-preserving compositing works</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          This is the capability that separates a real system from a demo, and it's worth understanding
+          model-agnostically. Each reference image is read by <strong>two</strong> encoders at once, and
+          both readings are folded into the conditioning that steers generation:
+        </p>
+      </div>
+      <div class="comp-grid">
+        <div class="comp-card reveal"><span class="cc-n">A</span><h4>A vision-language encoder</h4><p>Reads <em>what is in</em> each image — this is a face, that is a logo, this is a product — as semantics the model can reason about alongside your prompt.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">B</span><h4>A latent (VAE) encoder</h4><p>Encodes each image's <em>pixels</em> into the latent space the diffusion model works in — the concrete appearance to preserve, not just the description.</p></div>
+      </div>
+      <div class="prose reveal">
+        <p>
+          Because every reference goes through <em>both</em> paths, the model knows both “there is a person”
+          <em>and</em> exactly what that person looks like. That dual reading is why it can relight and
+          recompose while the identity survives. Order carries meaning, too: the first image is the primary
+          subject slot; the rest are pure references.
+        </p>
+      </div>
+      <div class="flow reveal">   your images (order matters — image 1 is the subject)
+   ┌──────────────┬──────────────┬──────────────┐
+   │   image 1    │   image 2    │   image 3    │
+   │  subject     │  reference   │  reference   │
+   └──────┬───────┴──────┬───────┴──────┬───────┘
+          │              │              │
+   ┌──────┴──────────────┴──────────────┴───────┐
+   │  each image → vision-language encoder  (what)│
+   │  each image → latent encoder           (look)│
+   └───────────────────────┬─────────────────────┘
+                           │  conditioning = prompt + all references
+                           ▼
+                 ┌───────────────────┐
+                 │  diffusion sampler │ ──▶ fused, identity-preserving image
+                 │  (few-step)        │
+                 └───────────────────┘</div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ the canvas-size trick</span>
+        <div class="prose">
+          <p>
+            With reference images driving the <em>content</em> through conditioning, the starting canvas only
+            has to decide the <em>output dimensions</em>. So an explicit size can swap in a blank latent of
+            exactly the requested shape without disturbing any reference — the composite still preserves
+            identity, you just control the frame. Omit the size and it inherits the first image's aspect
+            ratio. Same graph, one optional node, fully backward-compatible.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 — 24 GB -->
+    <section class="sect" data-sect="05 / 24 GB">
+      <div class="sect-head reveal"><span class="idx">05</span><h2>Fitting a frontier idea on a 24&nbsp;GB card</h2><span class="rule"></span></div>
+      <p class="lede reveal">The capability is one thing; making it run — and stay running — on hardware you can actually buy is the engineering.</p>
+
+      <div class="path">
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 01</span>
+          <h4>Quantize to fit</h4>
+          <ul>
+            <li>The full stack — the diffusion weights, the vision-language text encoder, the VAE — is squeezed with a quantized build so one model fits on a single 24&nbsp;GB card.</li>
+            <li>One model resident, kept hot. No swapping.</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 02</span>
+          <h4>A few-step sampler</h4>
+          <ul>
+            <li>A distillation LoRA cuts sampling to a handful of steps — the difference between ~9&nbsp;s and “too slow to use.”</li>
+            <li>It's also what makes editing <em>edit</em> rather than rebuild the image from noise.</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 03</span>
+          <h4>Wrap it in an adapter</h4>
+          <ul>
+            <li>A node-graph diffusion runtime (the ComfyUI family) does the actual work; a thin adapter turns its graph into OpenAI-style <code>/v1/images/*</code> endpoints.</li>
+            <li>Callers never see the graph — they see an image API.</li>
+          </ul>
+        </div>
+        <div class="path-week reveal">
+          <span class="pw-n">STEP 04</span>
+          <h4>Convert before it leaves</h4>
+          <ul>
+            <li>The runtime emits PNG; the adapter re-encodes to WebP on the GPU box before anything ships — ~23× smaller for web use.</li>
+            <li>Small bytes all the way down the wire.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout reveal">
+        <span class="co-tag">▸ the bug that only bit a cold GPU</span>
+        <div class="prose">
+          <p>
+            With two GPU workers behind a load balancer, roughly half of first requests failed with an
+            out-of-memory error — and the retry always succeeded. The tell: it only happened on a
+            <em>cold</em> card. Loading the full model set from scratch hit a peak-VRAM-plus-allocator-fragmentation
+            spike right as the text encoder loaded; the model itself fits fine and a hot worker sat happily
+            at ~19&nbsp;GB. Switching the allocator to the framework's native caching allocator flattened the
+            spike — 0 OOM across a sustained burst on both cards. A one-line launch flag, host-independent,
+            checked straight into the compose file.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 — making it listen -->
+    <section class="sect" data-sect="06 / MAKING IT LISTEN">
+      <div class="sect-head reveal"><span class="idx">06</span><h2>Making the model actually listen</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          Here's a failure that cost real debugging time. The model kept taking prompts far too literally —
+          asked for a clean product shot, it would scribble menu text, fake UI, and stray watermarks into
+          the frame — and no negative prompt made any difference. It was ignoring “don't.”
+        </p>
+      </div>
+      <div class="prose reveal">
+        <p>
+          The root cause was two coupled defaults baked into the pipeline. The guidance scale was pinned at
+          <code>1.0</code>, and the negative-prompt input was wired to a dead node that produced nothing. At
+          a guidance of 1.0 the classifier-free-guidance math collapses to “positive only” — the negative
+          term cancels out entirely — so even a real negative prompt would have been a no-op. Both had to be
+          fixed together, and neither was even exposed for a caller to set.
+        </p>
+      </div>
+      <div class="flow reveal">guidance = 1.0   →  output = positive-only   <span class="c"># negatives cancel; prompt taken literally</span>
+guidance &gt; 1.0   →  output = positive pulled away from negative
+                    <span class="c"># now “no text, no watermark, no UI” actually bites</span></div>
+      <div class="prose reveal">
+        <p>
+          The fix ran end to end: replace the dead negative node with a real encoder, expose both guidance
+          and negative prompt through every layer — workflow, adapter, gateway, client — and set sensible
+          defaults centrally so one change propagates everywhere. Crucially it stays backward-compatible: at
+          the default guidance of 1.0 the new nodes are mathematically inert, so nothing that worked before
+          changes. Turn guidance up and the negatives finally do their job — cleaner plates, no scribbled
+          text.
+        </p>
+      </div>
+      <div class="principle reveal">
+        <h4>A knob you can't set is a knob that's stuck.</h4>
+        <p>The negative prompt “didn't work” not because the idea was wrong but because it was never plumbed out to where anyone could turn it — and a second baked default silently neutralised it even if they had. Expose the controls end to end, wire real defaults in one place, and keep the old path inert so exposing them changes nothing until someone opts in.</p>
+      </div>
+    </section>
+
+    <!-- 07 — serving -->
+    <section class="sect" data-sect="07 / SERVING">
+      <div class="sect-head reveal"><span class="idx">07</span><h2>Turning a model into a service</h2><span class="rule"></span></div>
+      <div class="prose reveal">
+        <p>
+          A model on a GPU isn't a product. What turns it into one is the boring layer in front: a gateway
+          that sits ahead of several GPU workers and makes them behave like a single, fair, observable API.
+          The shape:
+        </p>
+      </div>
+      <div class="flow reveal">any client ──▶  gateway  ──▶  worker A  (GPU, 1 image in flight)
+   (OpenAI    │ queue     └──▶  worker B  (GPU, 1 image in flight)
+    request)  │ fairness
+              │ health          round-robin → throughput ×N
+              │ dashboard       sick worker → routed around</div>
+      <table class="modtable reveal">
+        <thead><tr><th>Concern</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Load balance</td><td>One image in flight per GPU; healthy workers share the load round-robin; a failing worker is skipped automatically.</td></tr>
+          <tr><td>Fair queue</td><td>Not one FIFO but one queue per user, round-robined between them — a heavy user dumping a batch can't bury someone sending three.</td></tr>
+          <tr><td>Sync <em>and</em> async</td><td>Block-and-return by default (OpenAI-compatible), or opt into a job id you poll — so long jobs don't hold a connection and you can see your place in line.</td></tr>
+          <tr><td>Honest error codes</td><td>The worker's real HTTP status passes straight through instead of being flattened to a generic 502 — the code you see is the layer that actually failed.</td></tr>
+          <tr><td>Small by default</td><td>WebP responses; the server keeps no images — results live in memory briefly, then expire.</td></tr>
+          <tr><td>Observability</td><td>A live dashboard: per-worker state, queue depth per user, GPU health across every box.</td></tr>
+        </tbody>
+      </table>
+      <div class="prose reveal">
+        <p>
+          Inside the private network it's all trusted over VPN — zero tokens, zero setup. For the outside
+          world, the port is never exposed directly; a tunnel dials <em>out</em> and an access layer with
+          service tokens guards the front. The endpoints and request bodies are identical either way, so a
+          cloud function calls it exactly like a laptop on the VPN does.
+        </p>
+      </div>
+      <div class="toolset reveal">
+        <span>generate</span><span>edit</span><span>composite / poster</span>
+        <span>OpenAI-compatible</span><span>sync + async polling</span>
+        <span>per-user fair queue</span><span>WebP by default</span>
+        <span class="danger">multi-GPU workers ⚡</span><span class="danger">self-healing GPU ⚡</span>
+      </div>
+      <p class="note-small reveal">Three request shapes, one endpoint family: zero reference images generates, one edits, two-or-three composite. The client sends a normal OpenAI-style image request and gets back base64 — it never needs to know there's a queue, two GPUs, and a graph runtime behind the curtain.</p>
+    </section>
+
+    <!-- 08 — the point -->
+    <section class="sect" data-sect="08 / THE POINT">
+      <div class="sect-head reveal"><span class="idx">08</span><h2>The point</h2><span class="rule"></span></div>
+      <p class="closing-quote reveal">Matching Gemini wasn't one magic model. It was <span class="q">one model, well served</span>.</p>
+      <p class="lede closing-sub reveal">
+        The frontier capability — multi-reference compositing that preserves identity, editing that edits,
+        text that reads — came not from out-teching a trillion-dollar lab but from three unglamorous moves:
+        collapse three specialists into one instruction-edit model, understand the dual-encoder conditioning
+        well enough to trust it, and wrap it in a serving layer that's fair, observable, and small on the
+        wire. The wrong turns — the two-model thrash, the negative prompt that couldn't fire — taught more
+        than the wins. What you get at the end is something a hosted API can't be: private, owned, and
+        running all day on hardware in your own rack.
+      </p>
+      <p class="ref-note reveal">
+        Companion to my <a href="local-agent.html">Local Coding Agent</a> and <a href="harness.html">Harness
+        Engineering</a> notes — same philosophy, pointed at image generation instead of code.
+      </p>
+    </section>
+
+    <footer>
+      <span>© <span id="year">2026</span> YUN-YEN CHUANG</span>
+      <span><a href="index.html" style="color:var(--accent-deep)">← back to home</a></span>
+    </footer>
+  </main>
+
+  <script src="assets/main.js"></script>
+</body>
+</html>
