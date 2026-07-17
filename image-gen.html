@@ -272,38 +272,71 @@ generate → unload B, load A …</div>
       <div class="prose reveal">
         <p>
           This is the capability that separates a real system from a demo, and it's worth understanding
-          model-agnostically. Each reference image is read by <strong>two</strong> encoders at once, and
-          both readings are folded into the conditioning that steers generation:
+          model-agnostically. The mode that does it — call it <em>multi-edit</em> — is really a
+          <strong>routing</strong> decision: how each input image is fed into the model. Every reference is
+          read by <strong>two</strong> encoders at once, and both readings are folded into the conditioning
+          that steers generation:
         </p>
       </div>
       <div class="comp-grid">
-        <div class="comp-card reveal"><span class="cc-n">A</span><h4>A vision-language encoder</h4><p>Reads <em>what is in</em> each image — this is a face, that is a logo, this is a product — as semantics the model can reason about alongside your prompt.</p></div>
-        <div class="comp-card reveal"><span class="cc-n">B</span><h4>A latent (VAE) encoder</h4><p>Encodes each image's <em>pixels</em> into the latent space the diffusion model works in — the concrete appearance to preserve, not just the description.</p></div>
+        <div class="comp-card reveal"><span class="cc-n">A</span><h4>A vision-language encoder</h4><p>Reads <em>what is in</em> each image — this is a face, that is a logo, this is a product — as semantics the model can reason about alongside your prompt. The <em>“what.”</em></p></div>
+        <div class="comp-card reveal"><span class="cc-n">B</span><h4>A latent (VAE) encoder</h4><p>Encodes each image's <em>pixels</em> into the latent space the diffusion model works in — the concrete appearance to preserve, not just the description. The <em>“look.”</em></p></div>
       </div>
       <div class="prose reveal">
         <p>
           Because every reference goes through <em>both</em> paths, the model knows both “there is a person”
           <em>and</em> exactly what that person looks like. That dual reading is why it can relight and
-          recompose while the identity survives. Order carries meaning, too: the first image is the primary
-          subject slot; the rest are pure references.
+          recompose while identity survives. Order carries meaning: the first image is the primary subject
+          slot (and, absent an explicit size, sets the output frame); the rest are pure references.
         </p>
       </div>
-      <div class="flow reveal">   your images (order matters — image 1 is the subject)
+      <div class="flow reveal">   references (order matters — image 1 is the subject / canvas)
    ┌──────────────┬──────────────┬──────────────┐
    │   image 1    │   image 2    │   image 3    │
-   │  subject     │  reference   │  reference   │
    └──────┬───────┴──────┬───────┴──────┬───────┘
-          │              │              │
-   ┌──────┴──────────────┴──────────────┴───────┐
-   │  each image → vision-language encoder  (what)│
-   │  each image → latent encoder           (look)│
-   └───────────────────────┬─────────────────────┘
-                           │  conditioning = prompt + all references
-                           ▼
-                 ┌───────────────────┐
-                 │  diffusion sampler │ ──▶ fused, identity-preserving image
-                 │  (few-step)        │
-                 └───────────────────┘</div>
+      3 routes        2 routes       2 routes
+   ┌──────┴───────┐  ┌───┴──────────────┴───────────────┐
+   │ CANVAS path  │  │ CONDITIONING path (every image)   │
+   │  (image 1)   │  │   ├ vision-language encoder → what │
+   │ scale → VAE  │  │   └ VAE encode            → look   │
+   │   encode     │  └─────────────────┬─────────────────┘
+   │     │        │                    │ prompt + all references
+   │ start latent │                    │
+   │ (denoise 1.0 │                    │
+   │  drops its   │                    │
+   │  pixels)     │                    │
+   └──────┬───────┘                    │
+          └────────────┐   ┌───────────┘
+                       ▼   ▼
+               ┌────────────────────┐
+               │  diffusion sampler │ ──▶ VAE decode ──▶ fused image
+               │    (few-step)      │
+               └────────────────────┘</div>
+      <div class="prose reveal">
+        <p>
+          The subtle part is what the starting canvas contributes. Image 1 is scaled and VAE-encoded into a
+          start latent — but the sampler runs at full denoise (<code>1.0</code>), which discards that latent's
+          <em>pixels</em> and keeps only its <em>shape</em>. So the composite is not a paint-over of image 1;
+          every identity — image 1's included — arrives through the conditioning, carried by the two encoders.
+          That is precisely the routing that makes multi-edit <em>fuse</em> rather than overwrite. Drop denoise
+          below 1.0 and you get the opposite behaviour: classic img2img that keeps the source pixels.
+        </p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ which VAE, and why it isn't interchangeable</span>
+        <div class="prose">
+          <p>
+            The VAE is not a free choice. It has to be the one <em>paired with the diffusion backbone</em> —
+            trained jointly, so its latent space is exactly what the sampler expects; bolt on a VAE from a
+            different model family and it decodes to mush or shifted colour. Reach for a modern
+            high-compression image VAE — the current generation packs more latent channels than the old
+            four-channel, SD-era autoencoders — because fine detail and crisp in-image text live or die on how
+            faithfully the VAE round-trips pixels ↔ latent. And it works <strong>both ends</strong>: the same
+            VAE encodes every reference into the latent that feeds conditioning, <em>and</em> decodes the final
+            latent back to pixels. One loader, used at input and output.
+          </p>
+        </div>
+      </div>
       <div class="callout reveal">
         <span class="co-tag">▸ the canvas-size trick</span>
         <div class="prose">
@@ -406,6 +439,25 @@ guidance &gt; 1.0   →  output = positive pulled away from negative
           text.
         </p>
       </div>
+      <div class="prose reveal">
+        <p>
+          Guidance is only one dial on the sampler. A node-graph runtime exposes the whole diffusion process
+          as editable inputs, and most “it won't do what I asked” problems are one of these set wrong — so
+          it's worth knowing what each actually controls:
+        </p>
+      </div>
+      <table class="modtable reveal">
+        <thead><tr><th>Parameter</th><th>What it controls</th></tr></thead>
+        <tbody>
+          <tr><td>steps</td><td>Denoising iterations. A few-step distillation LoRA tunes this to ~4 — more is <em>not</em> better here; the LoRA expects the low count it was trained for.</td></tr>
+          <tr><td>cfg</td><td>Guidance scale — how hard the sampler pulls toward the positive prompt and away from the negative. <code>1.0</code> collapses to positive-only (negatives inert); <code>2–4</code> makes the prompt and negatives bite.</td></tr>
+          <tr><td>denoise</td><td>How much of the start latent is replaced with noise before sampling. <code>1.0</code> = start from pure noise, so references arrive through conditioning, not start pixels (edit / composite); <code>&lt;1.0</code> = keep some of the source (img2img strength).</td></tr>
+          <tr><td>seed</td><td>The RNG seed. Fix it to reproduce a result exactly; vary it to explore alternatives from one prompt.</td></tr>
+          <tr><td>sampler / scheduler</td><td>The numerical solver and its noise schedule — together they set the sampling trajectory and the speed-vs-character trade-off.</td></tr>
+          <tr><td>latent source</td><td>The starting canvas: an <em>empty</em> latent sized to the request (dimensions only), or one <em>VAE-encoded</em> from a source image (dimensions + pixels).</td></tr>
+          <tr><td>positive / negative</td><td>The two encoded conditionings — the prompt and references to move <em>toward</em>, and the terms to move <em>away</em> from (only active once cfg&nbsp;&gt;&nbsp;1).</td></tr>
+        </tbody>
+      </table>
       <div class="principle reveal">
         <h4>A knob you can't set is a knob that's stuck.</h4>
         <p>The negative prompt “didn't work” not because the idea was wrong but because it was never plumbed out to where anyone could turn it — and a second baked default silently neutralised it even if they had. Expose the controls end to end, wire real defaults in one place, and keep the old path inert so exposing them changes nothing until someone opts in.</p>
@@ -445,6 +497,23 @@ guidance &gt; 1.0   →  output = positive pulled away from negative
           service tokens guards the front. The endpoints and request bodies are identical either way, so a
           cloud function calls it exactly like a laptop on the VPN does.
         </p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ keep it off the brain's box</span>
+        <div class="prose">
+          <p>
+            One deployment lesson worth stating plainly: don't co-locate the image service with the language
+            model. It's tempting — one GPU box, one thing to manage — but the two have opposite appetites. A
+            language model wants a large context resident in memory; image workers want to churn short, bursty
+            GPU jobs. Share a host and they fight for VRAM, and restarting one drags down the other — you've
+            made two unrelated services into a single point of failure. Give the image system its own host (or
+            its own small cluster behind the queue) and each one scales, restarts, and fails on its own.
+          </p>
+        </div>
+      </div>
+      <div class="principle reveal">
+        <h4>A standalone image API is an agent other agents can call.</h4>
+        <p>Once it's decoupled and OpenAI-compatible, it stops being “a feature of one app” and becomes a peer on the network — the clean seam for agent-to-agent (A2A) composition. The highest-leverage peer to put in front of it is a <em>prompt-refinement</em> agent: a small language model that takes a user's rough request, rewrites it into the phrasing the image model actually responds to, looks at the result (vision), and iterates — “the sign text is clipped, regenerate wider.” The image model never has to understand loose human intent; a language agent translates and closes the loop. Keeping the hosts separate is exactly what turns that — one agent calling another — from tangled into clean.</p>
       </div>
       <div class="toolset reveal">
         <span>generate</span><span>edit</span><span>composite / poster</span>
