@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
+  <title>Meta-DiffuB · NeurIPS 2024 — Research · Yun-Yen Chuang</title>
+  <meta name="description" content="A contextualized sequence-to-sequence text-diffusion model with meta-exploration: a scheduler network learns a per-sentence noise schedule, trained by the generation quality it produces — state-of-the-art and plug-and-play. ｜ 為每個句子排一條專屬的加噪時間表。Research by Yun-Yen Chuang (莊昀諺), Maxora AI." />
+  <meta name="keywords" content="Meta-DiffuB, text diffusion, sequence-to-sequence, meta-exploration, diffusion models, NLG, 文字擴散模型, 元探索, Yun-Yen Chuang, 莊昀諺" />
+  <meta name="author" content="Yun-Yen Chuang (莊昀諺)" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://yunyenchuang.com/research/meta-diffub.html" />
+  <meta name="theme-color" content="#fdfdfd" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Meta-DiffuB · NeurIPS 2024" />
+  <meta property="og:description" content="A contextualized sequence-to-sequence text-diffusion model with meta-exploration: a scheduler network learns a per-sentence noise schedule, trained by the generation quality it produces — state-of-the-art and plug-and-play." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://yunyenchuang.com/research/meta-diffub.html" />
+  <meta property="og:site_name" content="Yun-Yen Chuang" />
+  <meta property="og:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Meta-DiffuB · NeurIPS 2024" />
+  <meta name="twitter:description" content="A contextualized sequence-to-sequence text-diffusion model with meta-exploration: a scheduler network learns a per-sentence noise schedule, trained by the generation quality it produces — state-of-the-art and plug-and-play." />
+  <meta name="twitter:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Meta-DiffuB",
+    "description": "A contextualized sequence-to-sequence text-diffusion model with meta-exploration: a scheduler network learns a per-sentence noise schedule, trained by the generation quality it produces — state-of-the-art and plug-and-play.",
+    "url": "https://yunyenchuang.com/research/meta-diffub.html",
+    "mainEntityOfPage": "https://yunyenchuang.com/research/meta-diffub.html",
+    "inLanguage": "en",
+    "author": { "@type": "Person", "name": "Yun-Yen Chuang", "url": "https://yunyenchuang.com/" },
+    "publisher": { "@type": "Organization", "name": "Maxora AI", "url": "https://maxora.ai" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="../assets/diagrams.css" />
+  <link rel="stylesheet" href="../assets/harness.css" />
+  <style>
+    .zh-tagline { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.12em; color: var(--accent-deep); margin: -0.4rem 0 1.2rem; }
+    .sub-hero .status-row .ghbtn { text-decoration: none; }
+    .paper-block { border-top: none; margin-top: 0; padding-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="paper-grid"></div>
+  <div class="paper-vignette"></div>
+  <span class="reg tl"></span><span class="reg tr"></span>
+  <span class="reg bl"></span><span class="reg br"></span>
+  <div class="scan" id="scan"></div>
+  <div class="readout">
+    <span><b id="roSect">03 / RESEARCH</b></span>
+    <span><span class="dot">▸</span> scroll <span id="roPct">000</span>%</span>
+  </div>
+
+  <nav class="topnav">
+    <a class="brand" href="../index.html"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
+    <div class="navlinks">
+      <a href="../index.html#research" class="back-link">← all research</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <header class="sub-hero" data-sect="03 / RESEARCH">
+      <p class="eyebrow reveal">
+        <span class="live"><span class="pulse"></span>RESEARCH</span>
+        <span>·</span><span>NeurIPS 2024</span>
+      </p>
+      <h1 class="reveal">Meta-DiffuB</h1>
+      <p class="zh-tagline reveal" lang="zh-Hant">為每個句子排一條專屬的加噪時間表</p>
+      <p class="lede reveal">A contextualized sequence-to-sequence <strong>text-diffusion</strong> model with <strong>meta-exploration</strong>: a scheduler network learns a per-sentence noise schedule, trained by the generation quality it produces — state-of-the-art and plug-and-play.</p>
+      <div class="status-row reveal">
+        <a class="ghbtn" href="https://github.com/Meta-DiffuB/Meta-DiffuB" target="_blank" rel="noopener">code ↗</a>
+        <span>interactive — scroll to step through the method</span>
+      </div>
+    </header>
+
+    <section class="sect">
+      <article class="paper-block reveal" id="metadiffub">
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizDiffub" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">METHOD · scheduler–exploiter</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahD" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
+
+                  <!-- persistent nodes -->
+                  <g class="persist">
+                    <text class="mono-svg io-lbl" x="14" y="64" font-size="11">wˣ</text>
+                    <path class="flow fp-in" d="M30,60 L62,60" marker-end="url(#ahD)" />
+                    <g class="node-scheduler">
+                      <rect class="node-box" x="64" y="32" width="186" height="58" rx="9" />
+                      <text class="node-lbl" x="157" y="58" font-size="16" text-anchor="middle">Scheduler</text>
+                      <text class="node-sub" x="157" y="76" font-size="10.5" text-anchor="middle">Bψ · meta-explorer</text>
+                    </g>
+                    <path class="flow fp-beta" d="M250,61 L356,61" marker-end="url(#ahD)" />
+                    <text class="mono-svg beta-lbl" x="303" y="50" font-size="11" text-anchor="middle">βˣ</text>
+                    <text class="node-sub" x="303" y="80" font-size="9" text-anchor="middle">contextualized noise</text>
+                    <g class="node-exploiter">
+                      <rect class="node-box" x="358" y="32" width="190" height="58" rx="9" />
+                      <text class="node-lbl" x="453" y="58" font-size="16" text-anchor="middle">Exploiter</text>
+                      <text class="node-sub" x="453" y="76" font-size="10.5" text-anchor="middle">Dθ · S2S diffusion</text>
+                    </g>
+                  </g>
+
+                  <!-- L0 fixed-noise plot -->
+                  <g class="lyr lyr-fixed">
+                    <line class="axis-line" x1="95" y1="150" x2="95" y2="356" />
+                    <line class="axis-line" x1="95" y1="356" x2="520" y2="356" />
+                    <text class="ax-lbl" x="300" y="378" text-anchor="middle">diffusion step  t →</text>
+                    <text class="ax-lbl" x="78" y="255" text-anchor="middle" transform="rotate(-90 78 255)">βₜ noise</text>
+                    <path class="curve-sqrt" d="M95,350 C200,255 320,205 520,175" />
+                    <text class="mono-svg note" x="430" y="205" font-size="11">√-schedule</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11.5">one fixed schedule · every sentence treated alike</text>
+                  </g>
+
+                  <!-- L1 meta-instructions -->
+                  <g class="lyr lyr-instr">
+                    <text class="mono-svg note" x="300" y="150" text-anchor="middle" font-size="12">ι = Bψ(wˣ)  —  Meta-Instructions</text>
+                    <g class="instr-chips" font-size="13">
+                      <g class="chip t"><rect x="120" y="210" width="40" height="34" rx="6"/><text x="140" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip f"><rect x="170" y="210" width="40" height="34" rx="6"/><text x="190" y="232" text-anchor="middle">F</text></g>
+                      <g class="chip t"><rect x="220" y="210" width="40" height="34" rx="6"/><text x="240" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip t"><rect x="270" y="210" width="40" height="34" rx="6"/><text x="290" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip f"><rect x="320" y="210" width="40" height="34" rx="6"/><text x="340" y="232" text-anchor="middle">F</text></g>
+                      <g class="chip t"><rect x="370" y="210" width="40" height="34" rx="6"/><text x="390" y="232" text-anchor="middle">T</text></g>
+                      <g class="chip f"><rect x="420" y="210" width="40" height="34" rx="6"/><text x="440" y="232" text-anchor="middle">F</text></g>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="295" text-anchor="middle" font-size="11.5">‘skipping’ · T → step noise up · F → hold level</text>
+                    <text class="mono-svg note3" x="300" y="320" text-anchor="middle" font-size="10.5">βˣ = skipping(ι, β√)   ·   trained by policy gradient</text>
+                  </g>
+
+                  <!-- L2 contextualized beta -->
+                  <g class="lyr lyr-beta">
+                    <line class="axis-line" x1="95" y1="150" x2="95" y2="356" />
+                    <line class="axis-line" x1="95" y1="356" x2="520" y2="356" />
+                    <text class="ax-lbl" x="300" y="378" text-anchor="middle">diffusion step  t →</text>
+                    <path class="curve-sqrt faded" d="M95,350 C200,255 320,205 520,175" />
+                    <path class="curve-beta easy" d="M95,346 C190,215 320,185 520,158" />
+                    <path class="curve-beta hard" d="M95,352 C210,322 350,305 520,262" />
+                    <text class="mono-svg note-easy" x="430" y="150" font-size="10.5">easy → more noise</text>
+                    <text class="mono-svg note-hard" x="430" y="275" font-size="10.5">hard → less noise</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11.5">βˣ adapts per sentence — the key move</text>
+                  </g>
+
+                  <!-- L3 diffusion / denoise -->
+                  <g class="lyr lyr-diff">
+                    <text class="mono-svg note" x="300" y="158" text-anchor="middle" font-size="12">reverse diffusion with βˣ</text>
+                    <line class="chain-track" x1="80" y1="235" x2="520" y2="235" />
+                    <g class="chain-dots">
+                      <circle cx="110" cy="235" r="8"/><circle cx="178" cy="235" r="8"/>
+                      <circle cx="246" cy="235" r="8"/><circle cx="314" cy="235" r="8"/>
+                      <circle cx="382" cy="235" r="8"/><circle cx="450" cy="235" r="8"/>
+                    </g>
+                    <circle class="chain-flow" cx="110" cy="235" r="6" />
+                    <text class="mono-svg cl" x="70" y="212" text-anchor="middle" font-size="10">zT ~ N(0,I)</text>
+                    <text class="mono-svg cl" x="500" y="212" text-anchor="middle" font-size="10">z₀ → ŷ</text>
+                    <text id="diffubDenoise" class="denoise-out" x="300" y="320" text-anchor="middle" font-size="22">generating</text>
+                    <text class="mono-svg note2" x="300" y="360" text-anchor="middle" font-size="10.5">rounding → discrete target sentence</text>
+                  </g>
+
+                  <!-- L4 meta-reward loop -->
+                  <g class="lyr lyr-reward">
+                    <g class="gbox"><rect x="120" y="180" width="160" height="46" rx="8"/>
+                      <text class="mono-svg" x="200" y="200" text-anchor="middle" font-size="11">Dθ  → BLEU  r</text>
+                      <text class="node-sub" x="200" y="216" text-anchor="middle" font-size="9">before update</text></g>
+                    <g class="gbox alt"><rect x="320" y="180" width="160" height="46" rx="8"/>
+                      <text class="mono-svg" x="400" y="200" text-anchor="middle" font-size="11">Dθ′ → BLEU  r′</text>
+                      <text class="node-sub" x="400" y="216" text-anchor="middle" font-size="9">after update</text></g>
+                    <text class="reward-eq" x="300" y="280" text-anchor="middle" font-size="17">R_β = r′ − r</text>
+                    <text class="node-sub" x="300" y="302" text-anchor="middle" font-size="10">meta-reward</text>
+                    <path class="reward-arc" d="M300,310 C300,200 215,120 158,92" marker-end="url(#ahD)" />
+                    <text class="mono-svg note2" x="300" y="360" text-anchor="middle" font-size="11">∇ψ J(ψ) · policy gradient → update Scheduler</text>
+                  </g>
+
+                  <!-- L5 results -->
+                  <g class="lyr lyr-result">
+                    <text class="result-big disp-svg" x="300" y="175" text-anchor="middle" font-size="26">STATE OF THE ART</text>
+                    <text class="mono-svg note" x="300" y="200" text-anchor="middle" font-size="11">4 / 4 Seq2Seq benchmarks · vs DiffuSeq, SeqDiffuSeq, Dinoiser, PLMs</text>
+                    <g class="bars" transform="translate(150,230)">
+                      <g class="bar-pair" transform="translate(0,0)"><rect class="b-base" x="0" y="60" width="22" height="40"/><rect class="b-ours" x="26" y="22" width="22" height="78"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">CC</text></g>
+                      <g class="bar-pair" transform="translate(80,0)"><rect class="b-base" x="0" y="52" width="22" height="48"/><rect class="b-ours" x="26" y="14" width="22" height="86"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">QT</text></g>
+                      <g class="bar-pair" transform="translate(160,0)"><rect class="b-base" x="0" y="58" width="22" height="42"/><rect class="b-ours" x="26" y="20" width="22" height="80"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">WA</text></g>
+                      <g class="bar-pair" transform="translate(240,0)"><rect class="b-base" x="0" y="50" width="22" height="50"/><rect class="b-ours" x="26" y="10" width="22" height="90"/><text class="ax-lbl" x="24" y="116" text-anchor="middle">QQP</text></g>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="400" text-anchor="middle" font-size="11">scheduler = plug-and-play · no fine-tuning at inference</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capDiffub">DiffuSeq imposes <b>one fixed noise schedule</b> on every sentence — regardless of how hard it is to generate.</div>
+            </div>
+          </div>
+
+          <div class="steps-col" data-steps="diffub">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>One schedule for every sentence</h4>
+              <p>Standard S2S-diffusion (DiffuSeq) adds noise on a <strong>fixed √-schedule</strong>. A trivial paraphrase and a hard open-domain reply are corrupted exactly the same way.</p>
+              <p>But sentences differ in difficulty — non-contextualized noise leaves performance on the table.</p>
+            </div>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · the scheduler</span>
+              <h4>A network that reads the sentence</h4>
+              <p>The <em>Scheduler</em> Bψ — a small Seq2Seq model — reads the conditioning sentence wˣ and emits a sequence of <strong>Meta-Instructions</strong> ι, each labelled <em>True</em> or <em>False</em>.</p>
+              <p>A ‘skipping’ rule turns those labels into noise: <strong>True</strong> steps the noise up, <strong>False</strong> holds it.</p>
+              <div class="eq">ι = Bψ(wˣ)   →   βˣ = <span class="hl">skipping</span>(ι, β√)</div>
+            </div>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · contextualized noise</span>
+              <h4>Less noise for hard sentences</h4>
+              <p>The result is a <em>per-sentence</em> schedule βˣ that bends away from the fixed baseline. Harder sentences get <strong>less</strong> noise to preserve signal; easier ones get <strong>more</strong> to boost diversity.</p>
+              <p>This is the move that non-contextualized schedulers can't make.</p>
+            </div>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · the exploiter</span>
+              <h4>Generate with the scheduled noise</h4>
+              <p>The <em>Exploiter</em> Dθ — the S2S-diffusion model — diffuses and denoises using βˣ, recovering z₀ step by step, then rounds it back into a discrete target sentence ŷ.</p>
+            </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · meta-reward</span>
+              <h4>Generation quality teaches the scheduler</h4>
+              <p>How much did the exploiter improve? Compare BLEU before and after an update: the <strong>meta-reward</strong> R_β = r′ − r flows back through a <em>policy gradient</em> to train the scheduler.</p>
+              <p>The scheduler learns <em>how to noise</em> — never touching the generator's loss directly.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>State of the art, plug-and-play</h4>
+              <p>Meta-DiffuB sets a new bar across <strong>four</strong> Seq2Seq benchmarks, beating prior diffusion models and fine-tuned PLMs.</p>
+              <p>Better still, the trained scheduler drops into existing models like DiffuSeq as a <em>plug-and-play</em> module — no fine-tuning required.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <span>© <span id="year">2026</span> YUN-YEN CHUANG</span>
+      <span><a href="../index.html#research" style="color:var(--accent-deep)">← all research</a></span>
+    </footer>
+  </main>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>

@@ -445,3 +445,63 @@ html.reveal-now .reveal { transition: none !important; }
   html.js .reveal:not(.in) { opacity: 1; transform: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ===================== NAV DROPDOWN MENUS ===================== */
+.navitem { position: relative; display: inline-flex; }
+.navlink-btn {
+  font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.02em;
+  color: var(--muted); background: none; border: none; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.3rem; transition: color 0.2s;
+}
+.navlink-btn .caret { font-size: 0.62rem; transition: transform 0.2s var(--ease); }
+.navlink-btn:hover, .navitem.open .navlink-btn, .navitem:hover .navlink-btn { color: var(--ink); }
+.navitem.open .navlink-btn .caret, .navitem:hover .navlink-btn .caret { transform: translateY(1px); }
+.dropdown-menu {
+  position: absolute; top: calc(100% + 10px); left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  min-width: 200px; padding: 0.4rem; display: flex; flex-direction: column;
+  background: var(--paper); border: 1px solid var(--hair); border-radius: 12px;
+  box-shadow: 0 14px 34px oklch(0.235 0.014 255 / 0.14);
+  opacity: 0; visibility: hidden; z-index: 60;
+  transition: opacity 0.18s var(--ease), transform 0.18s var(--ease), visibility 0.18s;
+}
+.navitem:hover .dropdown-menu, .navitem:focus-within .dropdown-menu, .navitem.open .dropdown-menu {
+  opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+}
+.dropdown-menu a { padding: 0.55rem 0.7rem; border-radius: 7px; color: var(--ink-2); font-size: 0.8rem; white-space: nowrap; }
+.dropdown-menu a::before { display: none; }
+.dropdown-menu a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+
+@media (max-width: 620px) {
+  .navitem { display: block; width: 100%; }
+  .navlink-btn { width: 100%; justify-content: space-between; padding: 0.62rem 0.7rem; color: var(--ink-2); }
+  .dropdown-menu {
+    position: static; transform: none; opacity: 1; visibility: visible;
+    min-width: 0; padding: 0 0 0.3rem 0.7rem; background: none; border: none; box-shadow: none;
+  }
+  .dropdown-menu a { font-size: 0.82rem; }
+}
+
+/* ===================== RESEARCH CARD GRID (home) ===================== */
+.research-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+  gap: 1rem; margin-top: 1.7rem;
+}
+.res-card {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  padding: 1.25rem 1.3rem; border: 1px solid var(--hair); border-radius: 14px;
+  background: var(--paper-2); text-decoration: none; color: inherit;
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.res-card:hover {
+  border-color: var(--accent-line); transform: translateY(-3px);
+  box-shadow: 0 14px 30px oklch(0.235 0.014 255 / 0.12);
+}
+.res-card::before { display: none; }
+.res-emblem { width: 46px; height: 46px; color: var(--ink-2); margin-bottom: 0.15rem; }
+.res-emblem svg { width: 100%; height: 100%; display: block; }
+.res-venue { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-deep); }
+.res-title { font-family: var(--display); font-size: 1.14rem; font-weight: 600; color: var(--ink); }
+.res-sub { font-size: 0.88rem; color: var(--ink-2); line-height: 1.5; flex: 1; }
+.res-go { font-family: var(--mono); font-size: 0.73rem; color: var(--accent-deep); margin-top: 0.35rem; }
+.res-card:hover .res-go { text-decoration: underline; }

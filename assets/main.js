@@ -226,3 +226,31 @@
     window.addEventListener('resize', function () { if (window.innerWidth > 620) close(); });
   })();
 })();
+
+/* ---- nav dropdown menus (Research / Notes) ---- */
+(function () {
+  var items = Array.prototype.slice.call(document.querySelectorAll('.navitem.has-menu'));
+  if (!items.length) return;
+  function closeAll(except) {
+    items.forEach(function (it) {
+      if (it === except) return;
+      it.classList.remove('open');
+      var b = it.querySelector('.navlink-btn');
+      if (b) b.setAttribute('aria-expanded', 'false');
+    });
+  }
+  items.forEach(function (it) {
+    var btn = it.querySelector('.navlink-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var open = it.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      closeAll(it);
+    });
+  });
+  document.addEventListener('click', function (e) {
+    items.forEach(function (it) { if (!it.contains(e.target)) it.classList.remove('open'); });
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(null); });
+})();

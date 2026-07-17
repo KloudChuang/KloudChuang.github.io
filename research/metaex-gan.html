@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
+  <title>MetaEx-GAN · IEEE/ACM TASLP — Research · Yun-Yen Chuang</title>
+  <meta name="description" content="Meta-exploration for natural language generation with generative adversarial networks: a dedicated explorer samples a richer space, and the student's progress trains the teacher — quality and diversity together. ｜ 用元探索讓生成對抗網路更會「探索」。Research by Yun-Yen Chuang (莊昀諺), Maxora AI." />
+  <meta name="keywords" content="MetaEx-GAN, meta-exploration, GAN, natural language generation, adversarial learning, 生成對抗網路, 元探索, Yun-Yen Chuang, 莊昀諺" />
+  <meta name="author" content="Yun-Yen Chuang (莊昀諺)" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://yunyenchuang.com/research/metaex-gan.html" />
+  <meta name="theme-color" content="#fdfdfd" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="MetaEx-GAN · IEEE/ACM TASLP" />
+  <meta property="og:description" content="Meta-exploration for natural language generation with generative adversarial networks: a dedicated explorer samples a richer space, and the student's progress trains the teacher — quality and diversity together." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://yunyenchuang.com/research/metaex-gan.html" />
+  <meta property="og:site_name" content="Yun-Yen Chuang" />
+  <meta property="og:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MetaEx-GAN · IEEE/ACM TASLP" />
+  <meta name="twitter:description" content="Meta-exploration for natural language generation with generative adversarial networks: a dedicated explorer samples a richer space, and the student's progress trains the teacher — quality and diversity together." />
+  <meta name="twitter:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "MetaEx-GAN",
+    "description": "Meta-exploration for natural language generation with generative adversarial networks: a dedicated explorer samples a richer space, and the student's progress trains the teacher — quality and diversity together.",
+    "url": "https://yunyenchuang.com/research/metaex-gan.html",
+    "mainEntityOfPage": "https://yunyenchuang.com/research/metaex-gan.html",
+    "inLanguage": "en",
+    "author": { "@type": "Person", "name": "Yun-Yen Chuang", "url": "https://yunyenchuang.com/" },
+    "publisher": { "@type": "Organization", "name": "Maxora AI", "url": "https://maxora.ai" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="../assets/diagrams.css" />
+  <link rel="stylesheet" href="../assets/harness.css" />
+  <style>
+    .zh-tagline { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.12em; color: var(--accent-deep); margin: -0.4rem 0 1.2rem; }
+    .sub-hero .status-row .ghbtn { text-decoration: none; }
+    .paper-block { border-top: none; margin-top: 0; padding-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="paper-grid"></div>
+  <div class="paper-vignette"></div>
+  <span class="reg tl"></span><span class="reg tr"></span>
+  <span class="reg bl"></span><span class="reg br"></span>
+  <div class="scan" id="scan"></div>
+  <div class="readout">
+    <span><b id="roSect">03 / RESEARCH</b></span>
+    <span><span class="dot">▸</span> scroll <span id="roPct">000</span>%</span>
+  </div>
+
+  <nav class="topnav">
+    <a class="brand" href="../index.html"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
+    <div class="navlinks">
+      <a href="../index.html#research" class="back-link">← all research</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <header class="sub-hero" data-sect="03 / RESEARCH">
+      <p class="eyebrow reveal">
+        <span class="live"><span class="pulse"></span>RESEARCH</span>
+        <span>·</span><span>IEEE/ACM TASLP</span>
+      </p>
+      <h1 class="reveal">MetaEx-GAN</h1>
+      <p class="zh-tagline reveal" lang="zh-Hant">用元探索讓生成對抗網路更會「探索」</p>
+      <p class="lede reveal"><strong>Meta-exploration</strong> for natural language generation with <strong>generative adversarial networks</strong>: a dedicated explorer samples a richer space, and the student's progress trains the teacher — quality and diversity together.</p>
+      <div class="status-row reveal">
+        <a class="ghbtn" href="https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN" target="_blank" rel="noopener">code ↗</a>
+        <span>interactive — scroll to step through the method</span>
+      </div>
+    </header>
+
+    <section class="sect">
+      <article class="paper-block reveal" id="metaexgan">
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizGan" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">METHOD · explorer–generator–discriminator</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahG" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
+
+                  <!-- persistent nodes -->
+                  <g class="persist">
+                    <g class="node-explorer">
+                      <rect class="node-box" x="44" y="34" width="190" height="56" rx="9" />
+                      <text class="node-lbl" x="139" y="59" font-size="15" text-anchor="middle">Explorer</text>
+                      <text class="node-sub" x="139" y="77" font-size="10" text-anchor="middle">teacher · meta-exploration</text>
+                    </g>
+                    <g class="node-gen">
+                      <rect class="node-box" x="120" y="252" width="180" height="64" rx="9" />
+                      <text class="node-lbl" x="210" y="280" font-size="15" text-anchor="middle">Generator</text>
+                      <text class="node-sub" x="210" y="298" font-size="10" text-anchor="middle">Gθ · student · learns</text>
+                    </g>
+                    <g class="node-disc">
+                      <rect class="node-box" x="404" y="252" width="156" height="64" rx="9" />
+                      <text class="node-lbl" x="482" y="280" font-size="14" text-anchor="middle">Discriminator</text>
+                      <text class="node-sub" x="482" y="298" font-size="10" text-anchor="middle">Dϕ · real / fake</text>
+                    </g>
+
+                    <!-- flows -->
+                    <path class="flow f-sample" d="M150,90 C150,170 175,210 200,250" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-sample" x="92" y="180" font-size="9.5">sampled batch</text>
+                    <path class="flow f-gen" d="M300,284 L402,284" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-gen" x="351" y="274" font-size="9.5" text-anchor="middle">generated Y</text>
+                    <path class="flow f-reward" d="M470,318 C470,372 215,372 210,320" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-reward" x="340" y="388" font-size="9.5" text-anchor="middle">reward → ∇J(θ)</text>
+                    <path class="flow f-meta" d="M175,250 C120,200 110,140 120,92" marker-end="url(#ahG)" />
+                    <text class="mono-svg fl fl-meta" x="92" y="150" font-size="9" transform="rotate(-78 92 150)">learning effectiveness</text>
+                  </g>
+
+                  <!-- L0 classic GAN problem -->
+                  <g class="lyr lyr-classic">
+                    <rect class="role-badge" x="130" y="222" width="160" height="22" rx="11"/>
+                    <text class="mono-svg badge-tx" x="210" y="237" text-anchor="middle" font-size="10">explore + exploit (both)</text>
+                    <text class="mono-svg note2" x="300" y="410" text-anchor="middle" font-size="11.5">one network samples AND learns → sparse reward, weak diversity</text>
+                    <g class="collapse-dots">
+                      <circle cx="300" cy="150" r="5"/><circle cx="312" cy="152" r="5"/>
+                      <circle cx="306" cy="162" r="5"/><circle cx="296" cy="160" r="5"/>
+                      <circle cx="318" cy="160" r="5"/>
+                    </g>
+                    <text class="mono-svg note" x="360" y="158" font-size="10.5">mode collapse</text>
+                  </g>
+
+                  <!-- L1 split roles -->
+                  <g class="lyr lyr-split">
+                    <text class="mono-svg note" x="420" y="60" text-anchor="middle" font-size="11.5">split the two jobs</text>
+                    <text class="mono-svg note2" x="420" y="120" text-anchor="middle" font-size="10.5">Explorer → sampling</text>
+                    <text class="mono-svg note3" x="420" y="140" text-anchor="middle" font-size="10.5">Generator → learning</text>
+                  </g>
+
+                  <!-- L2 explore / sample diversity -->
+                  <g class="lyr lyr-sample">
+                    <text class="mono-svg note" x="300" y="150" text-anchor="middle" font-size="11.5">explorer rolls out a diverse batch</text>
+                    <g class="spread-dots">
+                      <circle cx="250" cy="185" r="4"/><circle cx="300" cy="172" r="4"/>
+                      <circle cx="350" cy="190" r="4"/><circle cx="275" cy="205" r="4"/>
+                      <circle cx="330" cy="205" r="4"/><circle cx="300" cy="195" r="4"/>
+                    </g>
+                    <g class="tok-fly">
+                      <text x="170" y="175" font-size="10">w₁</text><text x="170" y="205" font-size="10">w₂</text><text x="170" y="235" font-size="10">w₃</text>
+                    </g>
+                  </g>
+
+                  <!-- L3 learn + discriminate -->
+                  <g class="lyr lyr-learn">
+                    <text class="disc-out mono-svg" x="482" y="200" text-anchor="middle" font-size="12">real?  p = 0.5x</text>
+                    <text class="node-sub" x="482" y="218" text-anchor="middle" font-size="9">discriminator score</text>
+                    <text class="mono-svg note2" x="300" y="410" text-anchor="middle" font-size="11">reward updates the generator by policy gradient</text>
+                  </g>
+
+                  <!-- L4 meta loop -->
+                  <g class="lyr lyr-meta">
+                    <text class="reward-eq" x="300" y="170" text-anchor="middle" font-size="15">meta-reward = student's learning effectiveness</text>
+                    <text class="mono-svg note2" x="300" y="200" text-anchor="middle" font-size="10.5">how much did the generator improve from the explorer's batch?</text>
+                    <text class="mono-svg note3" x="300" y="222" text-anchor="middle" font-size="10.5">→ updates the explorer's exploration policy</text>
+                  </g>
+
+                  <!-- L5 result -->
+                  <g class="lyr lyr-result">
+                    <text class="result-big disp-svg" x="300" y="150" text-anchor="middle" font-size="22">QUALITY + DIVERSITY</text>
+                    <text class="mono-svg note" x="300" y="174" text-anchor="middle" font-size="11">improved together, without more sampling</text>
+                    <!-- quality vs diversity scatter -->
+                    <line class="axis-line" x1="180" y1="370" x2="420" y2="370"/>
+                    <line class="axis-line" x1="180" y1="230" x2="180" y2="370"/>
+                    <text class="ax-lbl" x="300" y="392" text-anchor="middle">quality →</text>
+                    <text class="ax-lbl" x="165" y="300" text-anchor="middle" transform="rotate(-90 165 300)">diversity →</text>
+                    <circle class="pt base" cx="250" cy="335" r="6"/><text class="ax-lbl" x="250" y="325" text-anchor="middle">GANs</text>
+                    <circle class="pt ours" cx="380" cy="262" r="7"/><text class="ax-lbl ours-lbl" x="380" y="252" text-anchor="middle">MetaEx-GAN</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11">generalizes to GPT-2-based generators</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capGan">In a classic Language GAN, a single <b>Generator both samples and learns</b> — the same policy explores and exploits.</div>
+            </div>
+          </div>
+
+          <div class="steps-col" data-steps="gan">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>One network, two jobs</h4>
+              <p>Language GANs train a generator with reinforcement learning. But that single generator must <strong>both sample</strong> (explore) <strong>and learn</strong> (exploit) — with the same policy.</p>
+              <p>Rewards are sparse, so exploration is poor: quality and diversity can't improve together, and the model drifts toward mode collapse.</p>
+            </div>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · split the roles</span>
+              <h4>A dedicated explorer</h4>
+              <p>MetaEx-GAN adds a meta-trained <em>Explorer</em> (the teacher), whose only job is sampling. The <em>Generator</em> (the student) is freed to just learn.</p>
+            </div>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · explore</span>
+              <h4>Sample a richer space</h4>
+              <p>The explorer rolls out a <strong>diverse batch</strong> of candidate sequences — searching parts of the space the generator's own policy would never reach.</p>
+            </div>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · learn &amp; judge</span>
+              <h4>Generator learns, discriminator scores</h4>
+              <p>The generator learns from that batch; the <em>Discriminator</em> scores real vs. generated and returns a reward that updates the generator by policy gradient.</p>
+            </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · meta-reward</span>
+              <h4>The student's progress trains the teacher</h4>
+              <p>The generator's <strong>learning effectiveness</strong> — how much it improved on the explorer's batch — becomes the <em>meta-reward</em> that updates the explorer's policy.</p>
+              <p>The teacher learns to explore exactly where the student learns most.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>Quality and diversity, together</h4>
+              <p>MetaEx-GAN reaches state-of-the-art NLG, improving sampling quality <em>and</em> diversity at once — without generating more sequences.</p>
+              <p>It also generalizes to large pre-trained generators like <strong>GPT-2</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <span>© <span id="year">2026</span> YUN-YEN CHUANG</span>
+      <span><a href="../index.html#research" style="color:var(--accent-deep)">← all research</a></span>
+    </footer>
+  </main>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>
