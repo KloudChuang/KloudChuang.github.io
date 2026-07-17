@@ -89,10 +89,25 @@
       <p class="zh-tagline reveal" lang="zh-Hant">用詞組級 roll-out 生成饒舌歌詞</p>
       <p class="lede reveal"><strong>Adversarial rap-lyric generation</strong> with phrase-level roll-out and attention rewards: roll out meaningful phrases, reward to the phrase boundary, and match weights rather than scores — plus a new dataset.</p>
       <div class="status-row reveal">
-        <a class="ghbtn" href="../index.html#pubs">details ↗</a>
+        <a class="ghbtn" href="https://scholar.google.com/citations?user=5BJ63mUAAAAJ&hl=en" target="_blank" rel="noopener">Scholar ↗</a>
         <span>interactive — scroll to step through the method</span>
       </div>
     </header>
+
+    <section class="sect" data-sect="BACKGROUND">
+      <div class="sect-head reveal"><span class="idx">▸</span><h2>Background</h2><span class="rule"></span></div>
+      <p class="lede reveal">Some background on sequence GANs and the credit-assignment problem they face.</p>
+      <div class="prose reveal">
+        <p>Generating text with a GAN means the generator writes a sequence one token at a time while a discriminator scores whole sentences. The catch is <strong>credit assignment</strong>: if a finished sentence scores badly, which word was to blame? The standard answer is <em>roll-out</em> — from each position, sample many possible completions to estimate that word's contribution — but rolling out entire sentences, word by word, is very expensive.</p>
+        <p>RapGAN targets rap-lyric generation and makes two moves. It rolls out at the <strong>phrase level</strong> rather than word by word — cheaper, and more meaningful since rap is organized by phrases — and it delivers an <strong>attention-based reward at every generation step</strong>, so feedback lands where it matters. Matching weights rather than raw scores stabilizes training, and the work also contributes a rap-lyric dataset.</p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ key terms</span>
+        <div class="prose">
+          <p><strong>Sequence GAN</strong> — a GAN whose generator emits a sequence of tokens. <strong>Roll-out</strong> — sampling completions of a partial sequence to score it. <strong>Credit assignment</strong> — figuring out which token earned the reward. <strong>Policy gradient</strong> — the RL trick that passes a reward signal back through discrete text.</p>
+        </div>
+      </div>
+    </section>
 
     <section class="sect">
       <article class="paper-block reveal" id="rapgan">

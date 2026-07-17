@@ -94,6 +94,21 @@
       </div>
     </header>
 
+    <section class="sect" data-sect="BACKGROUND">
+      <div class="sect-head reveal"><span class="idx">▸</span><h2>Background</h2><span class="rule"></span></div>
+      <p class="lede reveal">A quick primer on multiview detection and why some camera views can't be trusted.</p>
+      <div class="prose reveal">
+        <p><strong>Multiview detection</strong> places several overlapping cameras around a scene and fuses their views to locate objects — usually people — on a shared <em>ground plane</em> (a bird's-eye map). Multiple views help because an object hidden from one camera is often visible to another, which is how the method fights <em>occlusion</em>.</p>
+        <p>But cameras aren't equally trustworthy at every moment — glare, distance, crowding, or a bad angle can make a view unreliable, and naively averaging all cameras lets one bad view corrupt the result. QMVDet is a <strong>query-based</strong> detector with a <em>camera-aware attention scheduler</em>: it estimates each camera's reliability as the agreement between 2D (per-camera) and 3D (ground-plane) evidence, and leans on a view only when it is trustworthy.</p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ key terms</span>
+        <div class="prose">
+          <p><strong>Multiview detection</strong> — fusing several cameras to detect objects. <strong>Ground plane / BEV</strong> — the shared bird's-eye map the views are projected onto. <strong>Occlusion</strong> — an object blocked from one camera's view. <strong>Attention</strong> — letting the model weight the informative inputs more heavily.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="sect">
       <article class="paper-block reveal" id="qmvdet">
         <div class="scrolly">

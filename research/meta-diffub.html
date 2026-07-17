@@ -94,6 +94,21 @@
       </div>
     </header>
 
+    <section class="sect" data-sect="BACKGROUND">
+      <div class="sect-head reveal"><span class="idx">▸</span><h2>Background</h2><span class="rule"></span></div>
+      <p class="lede reveal">New here? Start with what a diffusion model is and why text is the hard case.</p>
+      <div class="prose reveal">
+        <p>Diffusion models generate by starting from pure noise and removing it a little at a time until something coherent emerges — the idea behind the recent wave of image generators. Applying it to <strong>text</strong>, where the output is a sequence of discrete words rather than continuous pixels, is newer and trickier.</p>
+        <p>A diffusion model is steered by a <em>noise schedule</em>: how much noise to add, then remove, at each step. Standard text-diffusion models use one fixed schedule for every sentence — but sentences differ, some easy and some hard, so a single schedule is a compromise. Meta-DiffuB's idea is to <strong>learn a per-sentence schedule</strong>: a small scheduler network reads the sentence and decides how much noise it needs, and it is trained by the quality of the text the main model then produces — a meta-exploration loop where the generator's success teaches the scheduler.</p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ key terms</span>
+        <div class="prose">
+          <p><strong>Diffusion model</strong> — generates data by repeatedly denoising. <strong>Noise schedule</strong> — the per-step plan of how much noise to add/remove. <strong>Seq2seq</strong> — maps an input sentence to an output sentence (e.g. translation, summarization). <strong>Meta-exploration</strong> — learning <em>how</em> to guide/explore — here the scheduler learns from the generator's results.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="sect">
       <article class="paper-block reveal" id="metadiffub">
         <div class="scrolly">

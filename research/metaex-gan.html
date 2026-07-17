@@ -94,6 +94,21 @@
       </div>
     </header>
 
+    <section class="sect" data-sect="BACKGROUND">
+      <div class="sect-head reveal"><span class="idx">▸</span><h2>Background</h2><span class="rule"></span></div>
+      <p class="lede reveal">First, what a GAN is — and why using one for text is unusually hard.</p>
+      <div class="prose reveal">
+        <p>A <strong>GAN</strong> (generative adversarial network) trains two networks against each other: a <em>generator</em> that produces samples and a <em>discriminator</em> that judges real vs. generated. The generator improves by trying to fool the discriminator. This is what revolutionized image generation.</p>
+        <p>Text is much harder for GANs because words are <strong>discrete</strong> — you can't smoothly nudge a word the way you can a pixel, so gradients can't flow through the sampling step. The usual workaround treats generation as reinforcement learning, using the discriminator's score as a reward — but that makes <em>exploration</em> fragile, and the generator tends to collapse onto a few safe phrasings. MetaEx-GAN adds a dedicated explorer trained by <strong>meta-exploration</strong>: it learns to sample a richer space, and the generator's progress feeds back to improve the explorer — so you get quality and diversity together.</p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ key terms</span>
+        <div class="prose">
+          <p><strong>GAN</strong> — a generator and a discriminator trained adversarially. <strong>Discriminator</strong> — the network that scores real vs. generated. <strong>Mode collapse</strong> — when a generator only produces a few safe outputs — low diversity. <strong>Meta-exploration</strong> — learning to explore the output space better.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="sect">
       <article class="paper-block reveal" id="metaexgan">
         <div class="scrolly">
