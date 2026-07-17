@@ -43,6 +43,7 @@ Engineering notes on my site — [**yunyenchuang.com**](https://yunyenchuang.com
 
 - 🛠️ **[Harness Engineering](https://yunyenchuang.com/harness.html)** — keeping a long-running AI growth agent stable, observable, and self-improving.
 - 🤖 **[Building a Local Coding Agent](https://yunyenchuang.com/local-agent.html)** — self-hosting a small model into a Claude-Code-level, privacy-first coding agent CLI.
+- 🎨 **[Rivalling Gemini's Images](https://yunyenchuang.com/image-gen.html)** — a self-hosted, Gemini-class image-generation system: multi-reference identity-preserving compositing, on consumer GPUs.
 
 ### 📫 Contact
 
