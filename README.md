@@ -26,12 +26,13 @@
 
 ### 🧠 Research interests
 
-`Meta-Learning` · `Reinforcement Learning` · `Adversarial Learning (GANs)` · `Diffusion Models` · `Natural Language Generation`
+`Meta-Learning` · `Reinforcement Learning` · `Adversarial Learning (GANs)` · `Diffusion Models` · `Natural Language Generation` · `Molecular Geometry Generation`
 
 ### 📄 Selected publications
 
 | Year | Venue | Paper |
 |------|-------|-------|
+| 2026 | **NeurIPS 2026** | **SSD: Shell-Guided Spherical Diffusion for Molecular Geometry Generation** — [overview](https://yunyenchuang.com/research/ssd.html) |
 | 2024 | **NeurIPS 2024** | **Meta-DiffuB: A Contextualized Sequence-to-Sequence Text Diffusion Model with Meta-Exploration** — [code](https://github.com/KloudChuang/neurips-meta-diffub) |
 | — | **IEEE/ACM TASLP** | **MetaEx-GAN: Meta Exploration to Improve Natural Language Generation via Generative Adversarial Networks** — [code](https://github.com/KloudChuang/IEEE-Taslp-MetaEx-GAN) |
 

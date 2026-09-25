@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
+  <title>SSD · NeurIPS 2026 — Research · Yun-Yen Chuang</title>
+  <meta name="description" content="Shell-guided Spherical Diffusion (SSD): replace the Gaussian prior of 3D molecular diffusion with a chemically scaled spherical shell plus shell-aware drifts — a plug-in that improves GeoDiff, SubGDiff, EDM, SemlaFlow and MCF. ｜ 以球殼先驗取代高斯先驗的分子 3D 構型擴散模型（NeurIPS 2026）。Research by Yun-Yen Chuang (莊昀諺), Maxora AI." />
+  <meta name="keywords" content="SSD, Shell-guided Spherical Diffusion, molecular geometry generation, molecular conformer generation, diffusion model, flow matching, SE(3)-equivariant, GEOM-QM9, GEOM-Drugs, NeurIPS 2026, 分子生成, 分子構型, 擴散模型, 球殼先驗, Yun-Yen Chuang, 莊昀諺" />
+  <meta name="author" content="Yun-Yen Chuang (莊昀諺)" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <link rel="canonical" href="https://yunyenchuang.com/research/ssd.html" />
+  <meta name="theme-color" content="#fdfdfd" />
+
+  <!-- Favicons -->
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="SSD: Shell-Guided Spherical Diffusion · NeurIPS 2026" />
+  <meta property="og:description" content="Replace the Gaussian prior of 3D molecular diffusion with a chemically scaled spherical shell plus shell-aware drifts — a plug-in that upgrades five coordinate-space backbones." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://yunyenchuang.com/research/ssd.html" />
+  <meta property="og:site_name" content="Yun-Yen Chuang" />
+  <meta property="og:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SSD: Shell-Guided Spherical Diffusion · NeurIPS 2026" />
+  <meta name="twitter:description" content="Replace the Gaussian prior of 3D molecular diffusion with a chemically scaled spherical shell plus shell-aware drifts — a plug-in that upgrades five coordinate-space backbones." />
+  <meta name="twitter:image" content="https://yunyenchuang.com/assets/og-cover.jpg" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "SSD: Shell-Guided Spherical Diffusion for Molecular Geometry Generation",
+    "description": "Replace the Gaussian prior of 3D molecular diffusion with a chemically scaled spherical shell plus shell-aware drifts — a plug-in that upgrades five coordinate-space backbones.",
+    "url": "https://yunyenchuang.com/research/ssd.html",
+    "mainEntityOfPage": "https://yunyenchuang.com/research/ssd.html",
+    "inLanguage": "en",
+    "about": ["Molecular geometry generation", "Diffusion models", "Flow matching", "SE(3)-equivariance"],
+    "isPartOf": { "@type": "PublicationEvent", "name": "40th Conference on Neural Information Processing Systems (NeurIPS 2026)" },
+    "author": { "@type": "Person", "name": "Yun-Yen Chuang", "url": "https://yunyenchuang.com/" },
+    "publisher": { "@type": "Organization", "name": "Maxora AI", "url": "https://maxora.ai" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="../assets/diagrams.css" />
+  <link rel="stylesheet" href="../assets/harness.css" />
+  <style>
+    .zh-tagline { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.12em; color: var(--accent-deep); margin: -0.4rem 0 1.2rem; }
+    .sub-hero .status-row .ghbtn { text-decoration: none; }
+    .paper-block { border-top: none; margin-top: 0; padding-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="paper-grid"></div>
+  <div class="paper-vignette"></div>
+  <span class="reg tl"></span><span class="reg tr"></span>
+  <span class="reg bl"></span><span class="reg br"></span>
+  <div class="scan" id="scan"></div>
+  <div class="readout">
+    <span><b id="roSect">03 / RESEARCH</b></span>
+    <span><span class="dot">▸</span> scroll <span id="roPct">000</span>%</span>
+  </div>
+
+  <nav class="topnav">
+    <a class="brand" href="../index.html"><span class="mark">YC</span> YUN-YEN&nbsp;CHUANG</a>
+    <div class="navlinks">
+      <a href="../index.html#research" class="back-link">← all research</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <header class="sub-hero" data-sect="03 / RESEARCH">
+      <p class="eyebrow reveal">
+        <span class="live"><span class="pulse"></span>RESEARCH</span>
+        <span>·</span><span>NeurIPS 2026</span>
+      </p>
+      <h1 class="reveal">SSD: Shell-Guided Spherical Diffusion</h1>
+      <p class="zh-tagline reveal" lang="zh-Hant">以「球殼先驗」取代高斯雜訊的分子 3D 構型生成</p>
+      <p class="lede reveal">Molecular diffusion models start from a Gaussian cloud whose size is set by <em>dimension</em>, not chemistry. SSD starts every molecule on a <strong>chemically scaled spherical shell</strong> and guides it inward with shell-aware drifts — a plug-in that upgrades <strong>five coordinate-space backbones</strong> without touching their architectures, losses or training budgets.</p>
+      <div class="status-row reveal">
+        <span class="ghbtn">NeurIPS 2026 · accepted</span>
+        <span>interactive — scroll to step through the method</span>
+      </div>
+    </header>
+
+    <section class="sect" data-sect="BACKGROUND">
+      <div class="sect-head reveal"><span class="idx">▸</span><h2>Background</h2><span class="rule"></span></div>
+      <p class="lede reveal">Why the starting point of a molecular diffusion model matters.</p>
+      <div class="prose reveal">
+        <p>Generating a molecule's <strong>3D geometry</strong> — where every atom sits in space — is a core step in drug discovery and computational chemistry. Modern generators (GeoDiff, EDM, SubGDiff, flow-matching models…) do it the diffusion way: start from random noise and denoise it, step by step, into a valid structure.</p>
+        <p>Almost all of them draw that starting noise from an <strong>isotropic Gaussian</strong>. In high dimensions a Gaussian isn't a blob — it concentrates on a thin shell of radius <em>σ<sub>T</sub>√3n</em> (the Gaussian Annulus Theorem). That radius depends only on the noise level and the atom count <em>n</em>, not on how big molecules actually are. The bigger the molecule, the worse the mismatch — and the longer, more wandering the denoising trajectory.</p>
+        <p>SSD keeps the shell, but makes it <strong>the right size</strong>: a dataset-calibrated radius, plus forward and reverse dynamics designed around that shell. Neither piece alone is enough; together they give short, stable shell-to-structure paths.</p>
+      </div>
+      <div class="callout reveal">
+        <span class="co-tag">▸ key terms</span>
+        <div class="prose">
+          <p><strong>Prior</strong> — the distribution a generator starts sampling from. <strong>Drift</strong> — the deterministic push applied to each atom at every step. <strong>SE(3)-equivariance</strong> — rotating or moving the input rotates/moves the output identically; molecules have no preferred orientation. <strong>COV / MAT</strong> — coverage (diversity, ↑) and matching RMSD (quality, ↓) of generated conformers against references.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sect">
+      <article class="paper-block reveal" id="ssd">
+        <div class="scrolly">
+          <div class="viz-col">
+            <div class="viz-sticky" id="vizSsd" data-stage="0">
+              <div class="viz-hud">
+                <span class="stage-id">GEOMETRY · shell → structure</span>
+                <span class="stage-bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              </div>
+              <div class="viz-body">
+                <svg viewBox="0 0 600 470" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <marker id="ahD" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+                      <path d="M0,0 L7,3 L0,6" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    </marker>
+                  </defs>
+
+                  <!-- L0: Gaussian prior radius mismatch -->
+                  <g class="lyr ly0">
+                    <circle class="gauss-ring" cx="230" cy="210" r="170"/>
+                    <g class="noise-dots">
+                      <circle class="noise-dot" cx="72"  cy="150" r="4"/><circle class="noise-dot" cx="118" cy="66"  r="4"/>
+                      <circle class="noise-dot" cx="236" cy="36"  r="4"/><circle class="noise-dot" cx="352" cy="82"  r="4"/>
+                      <circle class="noise-dot" cx="398" cy="196" r="4"/><circle class="noise-dot" cx="372" cy="318" r="4"/>
+                      <circle class="noise-dot" cx="262" cy="384" r="4"/><circle class="noise-dot" cx="128" cy="352" r="4"/>
+                      <circle class="noise-dot" cx="64"  cy="262" r="4"/>
+                    </g>
+                    <path class="wander" d="M352,82 C420,140 300,120 330,170 S250,150 262,196" marker-end="url(#ahD)"/>
+                    <path class="wander" d="M128,352 C60,300 190,300 160,260 S220,270 214,226" marker-end="url(#ahD)"/>
+                    <g class="mol">
+                      <line class="bond" x1="252" y1="210" x2="241" y2="229"/><line class="bond" x1="241" y1="229" x2="219" y2="229"/>
+                      <line class="bond" x1="219" y1="229" x2="208" y2="210"/><line class="bond" x1="208" y1="210" x2="219" y2="191"/>
+                      <line class="bond" x1="219" y1="191" x2="241" y2="191"/><line class="bond" x1="241" y1="191" x2="252" y2="210"/>
+                      <line class="bond" x1="252" y1="210" x2="274" y2="210"/><line class="bond" x1="219" y1="191" x2="197" y2="172"/>
+                      <circle class="atom" cx="252" cy="210" r="5"/><circle class="atom" cx="241" cy="229" r="5"/>
+                      <circle class="atom" cx="219" cy="229" r="5"/><circle class="atom" cx="208" cy="210" r="5"/>
+                      <circle class="atom" cx="219" cy="191" r="5"/><circle class="atom" cx="241" cy="191" r="5"/>
+                      <circle class="atom" cx="274" cy="210" r="5"/><circle class="atom" cx="197" cy="172" r="5"/>
+                    </g>
+                    <circle class="chem-ring" cx="230" cy="210" r="52"/>
+                    <text class="mono-svg note" x="500" y="120" text-anchor="middle" font-size="11">Gaussian radius</text>
+                    <text class="lbl-gauss" x="500" y="142" text-anchor="middle" font-size="13">r ≈ σ<tspan baseline-shift="sub" font-size="9">T</tspan>√3n</text>
+                    <text class="mono-svg note3" x="500" y="162" text-anchor="middle" font-size="10">set by dimension</text>
+                    <text class="mono-svg note" x="500" y="236" text-anchor="middle" font-size="11">molecule's size</text>
+                    <text class="lbl-chem" x="500" y="258" text-anchor="middle" font-size="13">r<tspan baseline-shift="sub" font-size="9">chem</tspan> ≪ σ<tspan baseline-shift="sub" font-size="9">T</tspan>√3n</text>
+                    <text class="mono-svg note3" x="500" y="278" text-anchor="middle" font-size="10">set by chemistry</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11">scale mismatch → long, wandering denoising paths</text>
+                  </g>
+
+                  <!-- L1: chemically scaled shell initialization -->
+                  <g class="lyr ly1">
+                    <circle class="shell" cx="230" cy="210" r="110"/>
+                    <circle class="center-dot" cx="230" cy="210" r="3"/>
+                    <line class="radius-line" x1="230" y1="210" x2="333" y2="248"/>
+                    <text class="lbl-chem" x="278" y="220" font-size="12">r<tspan baseline-shift="sub" font-size="8">SSD</tspan></text>
+                    <g class="shell-spin">
+                      <circle class="atom on" cx="333" cy="248" r="6"/><circle class="atom on" cx="259" cy="316" r="6"/>
+                      <circle class="atom on" cx="159" cy="294" r="6"/><circle class="atom on" cx="122" cy="229" r="6"/>
+                      <circle class="atom on" cx="140" cy="147" r="6"/><circle class="atom on" cx="211" cy="102" r="6"/>
+                      <circle class="atom on" cx="285" cy="115" r="6"/><circle class="atom on" cx="336" cy="182" r="6"/>
+                    </g>
+                    <text class="mono-svg note" x="500" y="126" text-anchor="middle" font-size="11">dataset-calibrated radius</text>
+                    <text class="lbl-chem" x="500" y="156" text-anchor="middle" font-size="13">QM9 · 6.37 Å</text>
+                    <text class="lbl-chem" x="500" y="180" text-anchor="middle" font-size="13">Drugs · 21.16 Å</text>
+                    <text class="mono-svg note3" x="500" y="232" text-anchor="middle" font-size="10">x = r · v / ‖v‖,  v ~ N(0, I)</text>
+                    <text class="mono-svg note3" x="500" y="252" text-anchor="middle" font-size="10">re-centred · random π</text>
+                    <text class="mono-svg note2" x="300" y="430" text-anchor="middle" font-size="11">every atom starts on a shell the size of real molecules</text>
+                  </g>
+
+                  <!-- L2: forward SDE — uniform-speed attraction to shell points -->
+                  <g class="lyr ly2">
+                    <circle class="shell faint" cx="230" cy="210" r="110"/>
+                    <g class="fwd">
+                      <line class="fwd-line" x1="252" y1="210" x2="159" y2="294"/><line class="fwd-line" x1="241" y1="229" x2="211" y2="102"/>
+                      <line class="fwd-line" x1="219" y1="229" x2="336" y2="182"/><line class="fwd-line" x1="208" y1="210" x2="259" y2="316"/>
+                      <line class="fwd-line" x1="219" y1="191" x2="333" y2="248"/><line class="fwd-line" x1="241" y1="191" x2="122" y2="229"/>
+                      <line class="fwd-line" x1="274" y1="210" x2="140" y2="147"/><line class="fwd-line" x1="197" y1="172" x2="285" y2="115"/>
+                    </g>
+                    <g>
+                      <circle class="atom" cx="252" cy="210" r="4.5"/><circle class="atom" cx="241" cy="229" r="4.5"/>
+                      <circle class="atom" cx="219" cy="229" r="4.5"/><circle class="atom" cx="208" cy="210" r="4.5"/>
+                      <circle class="atom" cx="219" cy="191" r="4.5"/><circle class="atom" cx="241" cy="191" r="4.5"/>
+                      <circle class="atom" cx="274" cy="210" r="4.5"/><circle class="atom" cx="197" cy="172" r="4.5"/>
+                      <circle class="atom on" cx="333" cy="248" r="5"/><circle class="atom on" cx="259" cy="316" r="5"/>
+                      <circle class="atom on" cx="159" cy="294" r="5"/><circle class="atom on" cx="122" cy="229" r="5"/>
+                      <circle class="atom on" cx="140" cy="147" r="5"/><circle class="atom on" cx="211" cy="102" r="5"/>
+                      <circle class="atom on" cx="285" cy="115" r="5"/><circle class="atom on" cx="336" cy="182" r="5"/>
+                    </g>
+                    <!-- inset: distance-to-target over time -->
+                    <text class="mono-svg note" x="510" y="104" text-anchor="middle" font-size="10">distance to target vs. t</text>
+                    <line class="axis-line" x1="440" y1="118" x2="440" y2="262"/>
+                    <line class="axis-line" x1="440" y1="262" x2="584" y2="262"/>
+                    <path class="ou-curve" d="M440,130 C470,215 520,240 584,250"/>
+                    <path class="ou-curve" d="M440,170 C470,230 520,248 584,255"/>
+                    <path class="ou-curve" d="M440,210 C470,244 520,255 584,258"/>
+                    <line class="lin-curve" x1="440" y1="130" x2="584" y2="262"/>
+                    <line class="lin-curve" x1="440" y1="170" x2="584" y2="262"/>
+                    <line class="lin-curve" x1="440" y1="210" x2="584" y2="262"/>
+                    <text class="lbl-chem" x="512" y="288" text-anchor="middle" font-size="10">SSD · linear, same arrival</text>
+                    <text class="mono-svg note3" x="512" y="306" text-anchor="middle" font-size="10">OU · exponential, spread</text>
+                    <text class="mono-svg note2" x="300" y="410" text-anchor="middle" font-size="11">f = α<tspan baseline-shift="sub" font-size="8">t</tspan> · (x<tspan baseline-shift="sub" font-size="8">T</tspan><tspan baseline-shift="super" font-size="7">π(i)</tspan> − x<tspan baseline-shift="sub" font-size="8">t</tspan>) / ‖x<tspan baseline-shift="sub" font-size="8">T</tspan><tspan baseline-shift="super" font-size="7">π(i)</tspan> − x<tspan baseline-shift="sub" font-size="8">t</tspan>‖</text>
+                    <text class="mono-svg note3" x="300" y="432" text-anchor="middle" font-size="10.5">normalised pull → uniform speed, thin forward shell</text>
+                  </g>
+
+                  <!-- L3: reverse SDE — three structured drifts -->
+                  <g class="lyr ly3">
+                    <g class="shell-shrink"><circle class="shell faint" cx="230" cy="210" r="110"/></g>
+                    <circle class="shell" cx="230" cy="210" r="110"/>
+                    <g class="drift-rad">
+                      <line x1="333" y1="248" x2="303" y2="237" marker-end="url(#ahD)"/><line x1="259" y1="316" x2="250" y2="285" marker-end="url(#ahD)"/>
+                      <line x1="159" y1="294" x2="180" y2="270" marker-end="url(#ahD)"/><line x1="122" y1="229" x2="153" y2="224" marker-end="url(#ahD)"/>
+                      <line x1="140" y1="147" x2="166" y2="165" marker-end="url(#ahD)"/><line x1="211" y1="102" x2="217" y2="133" marker-end="url(#ahD)"/>
+                      <line x1="285" y1="115" x2="269" y2="142" marker-end="url(#ahD)"/><line x1="336" y1="182" x2="305" y2="190" marker-end="url(#ahD)"/>
+                    </g>
+                    <g class="drift-score">
+                      <path d="M259,316 q14,-2 22,-14" marker-end="url(#ahD)"/>
+                      <path d="M140,147 q-2,-16 12,-24" marker-end="url(#ahD)"/>
+                      <path d="M336,182 q6,-14 -2,-26" marker-end="url(#ahD)"/>
+                    </g>
+                    <circle class="dmin-ring" cx="230" cy="210" r="22"/>
+                    <g class="drift-rep">
+                      <line x1="221" y1="210" x2="200" y2="210" marker-end="url(#ahD)"/>
+                      <line x1="239" y1="210" x2="260" y2="210" marker-end="url(#ahD)"/>
+                    </g>
+                    <circle class="atom" cx="221" cy="210" r="5"/><circle class="atom" cx="239" cy="210" r="5"/>
+                    <g>
+                      <circle class="atom on" cx="333" cy="248" r="5.5"/><circle class="atom on" cx="259" cy="316" r="5.5"/>
+                      <circle class="atom on" cx="159" cy="294" r="5.5"/><circle class="atom on" cx="122" cy="229" r="5.5"/>
+                      <circle class="atom on" cx="140" cy="147" r="5.5"/><circle class="atom on" cx="211" cy="102" r="5.5"/>
+                      <circle class="atom on" cx="285" cy="115" r="5.5"/><circle class="atom on" cx="336" cy="182" r="5.5"/>
+                    </g>
+                    <!-- legend -->
+                    <g font-size="11">
+                      <line class="leg-rad" x1="432" y1="136" x2="462" y2="136" marker-end="url(#ahD)"/>
+                      <text x="472" y="140">v<tspan baseline-shift="sub" font-size="8">rad</tspan> inward pull</text>
+                      <line class="leg-rep" x1="432" y1="176" x2="462" y2="176" marker-end="url(#ahD)"/>
+                      <text x="472" y="180">v<tspan baseline-shift="sub" font-size="8">rep</tspan> d &lt; d<tspan baseline-shift="sub" font-size="8">min</tspan></text>
+                      <path class="leg-score" d="M432,222 q16,-10 30,0" marker-end="url(#ahD)"/>
+                      <text x="472" y="224">v<tspan baseline-shift="sub" font-size="8">score</tspan> SE(3)-eq.</text>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="410" text-anchor="middle" font-size="11">dx = (v<tspan baseline-shift="sub" font-size="8">rad</tspan> + v<tspan baseline-shift="sub" font-size="8">rep</tspan> + v<tspan baseline-shift="sub" font-size="8">score</tspan>) dt + σ<tspan baseline-shift="sub" font-size="8">t</tspan> dw̄</text>
+                    <text class="mono-svg note3" x="300" y="432" text-anchor="middle" font-size="10.5">closed-form drifts · no new learnable parameters</text>
+                  </g>
+
+                  <!-- L4: plug-in across five backbones -->
+                  <g class="lyr ly4">
+                    <rect class="bar-base" x="200" y="56" width="14" height="10" rx="2"/><text x="220" y="65" font-size="10">backbone</text>
+                    <rect class="bar-ssd" x="300" y="56" width="14" height="10" rx="2"/><text x="320" y="65" font-size="10">+ SSD</text>
+                    <g font-size="11">
+                      <text class="bb-lbl" x="190" y="104" text-anchor="end">GeoDiff</text><text class="bb-met" x="190" y="118" text-anchor="end" font-size="9">Drugs · COV-R</text>
+                      <rect class="bar-base" x="200" y="94"  width="218.0" height="11" rx="2"/><text class="bar-val" x="424" y="103" font-size="9.5">64.1</text>
+                      <rect class="bar-ssd"  x="200" y="109" width="311.7" height="11" rx="2"/><text class="bar-val ssd" x="518" y="118" font-size="9.5">91.7</text>
+
+                      <text class="bb-lbl" x="190" y="160" text-anchor="end">SubGDiff</text><text class="bb-met" x="190" y="174" text-anchor="end" font-size="9">Drugs · COV-R</text>
+                      <rect class="bar-base" x="200" y="150" width="258.9" height="11" rx="2"/><text class="bar-val" x="465" y="159" font-size="9.5">76.2</text>
+                      <rect class="bar-ssd"  x="200" y="165" width="314.5" height="11" rx="2"/><text class="bar-val ssd" x="521" y="174" font-size="9.5">92.5</text>
+
+                      <text class="bb-lbl" x="190" y="216" text-anchor="end">EDM</text><text class="bb-met" x="190" y="230" text-anchor="end" font-size="9">QM9 · Mol-Stab</text>
+                      <rect class="bar-base" x="200" y="206" width="278.8" height="11" rx="2"/><text class="bar-val" x="485" y="215" font-size="9.5">82.0</text>
+                      <rect class="bar-ssd"  x="200" y="221" width="339.3" height="11" rx="2"/><text class="bar-val ssd" x="546" y="230" font-size="9.5">99.8</text>
+
+                      <text class="bb-lbl" x="190" y="272" text-anchor="end">SemlaFlow</text><text class="bb-met" x="190" y="286" text-anchor="end" font-size="9">Drugs · Validity</text>
+                      <rect class="bar-base" x="200" y="262" width="319.3" height="11" rx="2"/><text class="bar-val" x="526" y="271" font-size="9.5">93.9</text>
+                      <rect class="bar-ssd"  x="200" y="277" width="340.0" height="11" rx="2"/><text class="bar-val ssd" x="546" y="286" font-size="9.5">100</text>
+
+                      <text class="bb-lbl" x="190" y="328" text-anchor="end">MCF</text><text class="bb-met" x="190" y="342" text-anchor="end" font-size="9">Drugs · COV-P</text>
+                      <rect class="bar-base" x="200" y="318" width="227.1" height="11" rx="2"/><text class="bar-val" x="433" y="327" font-size="9.5">66.8</text>
+                      <rect class="bar-ssd"  x="200" y="333" width="234.0" height="11" rx="2"/><text class="bar-val ssd" x="440" y="342" font-size="9.5">68.8</text>
+                    </g>
+                    <text class="mono-svg note2" x="300" y="394" text-anchor="middle" font-size="11">same architecture · same loss · same training &amp; sampling budget</text>
+                    <text class="mono-svg note3" x="300" y="416" text-anchor="middle" font-size="10.5">weaker backbones (GeoDiff, EDM) catch up with far stronger ones</text>
+                  </g>
+
+                  <!-- L5: result -->
+                  <g class="lyr ly5">
+                    <text class="stat-accent disp-svg" x="300" y="108" text-anchor="middle" font-size="40">246.9 → 1.71</text>
+                    <text class="stat-cap" x="300" y="134" text-anchor="middle" font-size="11">path-excess ratio · SubGDiff → SSD-SubGDiff (QM9)</text>
+                    <line class="axis-line" x1="180" y1="164" x2="420" y2="164"/>
+                    <text class="stat-big disp-svg" x="300" y="222" text-anchor="middle" font-size="44">+32.5</text>
+                    <text class="stat-cap" x="300" y="248" text-anchor="middle" font-size="11">COV-R on ≥50-atom GEOM-Drugs molecules</text>
+                    <line class="axis-line" x1="180" y1="278" x2="420" y2="278"/>
+                    <text class="stat-big disp-svg" x="300" y="330" text-anchor="middle" font-size="32">5 backbones · 0 new params</text>
+                    <text class="stat-cap" x="300" y="354" text-anchor="middle" font-size="11">faster convergence · robust at 20 steps</text>
+                    <text class="mono-svg note2" x="300" y="410" text-anchor="middle" font-size="11">gains grow with molecule size — where Gaussian priors fail most</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="viz-cap" id="capSsd">A Gaussian prior concentrates at radius <b>σ<sub>T</sub>√3n</b> — set by dimension, far larger than the molecule itself.</div>
+            </div>
+          </div>
+
+          <div class="steps-col" data-steps="ssd">
+            <div class="step" data-stage="0">
+              <span class="step-n">STEP 00 · the problem</span>
+              <h4>The Gaussian prior is the wrong size</h4>
+              <p>Coordinate-space diffusion models start from <strong>N(0, σ<sub>T</sub>²I)</strong>. In 3n dimensions that noise sits on a thin shell of radius <em>σ<sub>T</sub>√3n</em> — fixed by the noise level and atom count, not by chemistry.</p>
+              <p>The sampler must then drift a long, wandering way back to a molecule-sized structure — and the mismatch grows with <em>n</em>.</p>
+            </div>
+            <div class="step" data-stage="1">
+              <span class="step-n">STEP 01 · shell prior</span>
+              <h4>Start on a chemically scaled shell</h4>
+              <p>SSD places every atom on a spherical shell of radius <strong>r<sub>SSD</sub></strong>, calibrated to the mean radius of centred training conformations — <em>6.37 Å</em> on QM9, <em>21.16 Å</em> on Drugs.</p>
+              <p>It is one dataset-level constant (a per-molecule radius would break the prior's role as a marginal). Atoms get a <strong>random shell assignment π</strong> per trajectory — deterministic matching collapses coverage.</p>
+            </div>
+            <div class="step" data-stage="2">
+              <span class="step-n">STEP 02 · forward process</span>
+              <h4>A uniform-speed pull onto the shell</h4>
+              <p>The forward SDE replaces Gaussian drift with a <strong>normalised directional attraction</strong>: each atom moves toward its assigned shell point at speed α<sub>t</sub>, whatever its distance.</p>
+              <p>Unlike Ornstein–Uhlenbeck's exponential pull, every atom arrives on the same schedule — a <em>thin</em> forward shell, so training noise already looks like SSD's prior.</p>
+            </div>
+            <div class="step" data-stage="3">
+              <span class="step-n">STEP 03 · reverse process</span>
+              <h4>Three structured drifts, back to a molecule</h4>
+              <p>Sampling starts from the same shell and combines <strong>radial attraction</strong> (a uniform inward pull), <strong>short-range repulsion</strong> (atoms never closer than d<sub>min</sub>) and an <strong>SE(3)-equivariant score</strong> that refines local geometry.</p>
+              <p>The added drifts are closed-form and depend only on directions and pairwise offsets, so equivariance is preserved and <em>no learnable parameters</em> are added.</p>
+            </div>
+            <div class="step" data-stage="4">
+              <span class="step-n">STEP 04 · plug-in</span>
+              <h4>One framework, five backbones</h4>
+              <p>SSD drops into <strong>GeoDiff, SubGDiff, EDM, SemlaFlow-style flow matching and MCF</strong> — each evaluated under its own canonical protocol, with identical training and sampling budgets.</p>
+              <p>Every backbone improves; GeoDiff on Drugs jumps from <em>64.1 → 91.7</em> COV-R, and EDM's QM9 molecule stability from <em>82.0 → 99.8%</em>. The ablation confirms neither the shell nor the drifts alone get there.</p>
+            </div>
+            <div class="step" data-stage="5">
+              <span class="step-n">STEP 05 · the result</span>
+              <h4>Shorter paths, bigger molecules</h4>
+              <p>Trajectories become direct: SubGDiff's path-excess ratio drops from <strong>246.9 to 1.71</strong>. SSD converges faster in training, stays strong at just <em>20 sampling steps</em>, and its gains grow with size — <strong>+32.5 COV-R</strong> on ≥50-atom drug-like molecules.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <span>© <span id="year">2026</span> YUN-YEN CHUANG</span>
+      <span><a href="../index.html#research" style="color:var(--accent-deep)">← all research</a></span>
+    </footer>
+  </main>
+
+  <script src="../assets/main.js"></script>
+</body>
+</html>

@@ -102,6 +102,14 @@
       'Score every post; anything above the <b>0.5 threshold</b> is flagged social-overload.',
       'SOS rearranges: <b>max 3 consecutive</b> overload posts, inserting a calm post to break streaks.',
       '<b>95.15% detection</b> · <b>75%</b> of readers reported reduced social-overload stress.'
+    ],
+    ssd: [
+      'A Gaussian prior concentrates at radius <b>σ<sub>T</sub>√3n</b> — set by dimension, far larger than the molecule itself.',
+      'SSD starts every atom on a <b>chemically scaled shell</b> r<sub>SSD</sub> — 6.37 Å (QM9), 21.16 Å (Drugs).',
+      'Forward: a <b>normalised, uniform-speed pull</b> onto randomly assigned shell points — a thin shell, not an OU spread.',
+      'Reverse: <b>radial attraction + short-range repulsion + SE(3)-equivariant score</b> — shell to structure.',
+      'A plug-in for <b>five backbones</b> — every one improves, with no architecture or loss changes.',
+      '<b>Path excess 246.9 → 1.71</b> · <b>+32.5 COV-R</b> on ≥50-atom molecules · 0 new parameters.'
     ]
   };
   var vizMap = {
@@ -109,7 +117,8 @@
     gan: { viz: document.getElementById('vizGan'), cap: document.getElementById('capGan') },
     qmv: { viz: document.getElementById('vizQmv'), cap: document.getElementById('capQmv') },
     rap: { viz: document.getElementById('vizRap'), cap: document.getElementById('capRap') },
-    sos: { viz: document.getElementById('vizSos'), cap: document.getElementById('capSos') }
+    sos: { viz: document.getElementById('vizSos'), cap: document.getElementById('capSos') },
+    ssd: { viz: document.getElementById('vizSsd'), cap: document.getElementById('capSsd') }
   };
 
   function setStage(key, stage) {

@@ -8,7 +8,7 @@
   <title>Yun-Yen Chuang 莊昀諺 資料科學家</title>
   <meta name="description" content="Yun-Yen Chuang (莊昀諺) — Founder & CEO of Maxora AI. Ph.D. in Electrical Engineering at National Taiwan University. Meta-exploration for diffusion models and natural language generation." />
   <meta name="author" content="Yun-Yen Chuang (莊昀諺)" />
-  <meta name="keywords" content="Yun-Yen Chuang, 莊昀諺, 資料科學家, Data Scientist, Kloud, Maxora AI, meta-learning, reinforcement learning, diffusion models, natural language generation, GAN, NTU, Meta-DiffuB, MetaEx-GAN, 生成式 AI, 人工智慧, AI 新創, 文字擴散模型, 強化學習, 元學習, 元探索, 自然語言生成, AI 創辦人, 地端 AI, 本地大語言模型" />
+  <meta name="keywords" content="Yun-Yen Chuang, 莊昀諺, 資料科學家, Data Scientist, Kloud, Maxora AI, meta-learning, reinforcement learning, diffusion models, natural language generation, GAN, NTU, Meta-DiffuB, MetaEx-GAN, SSD, molecular generation, 分子生成, 生成式 AI, 人工智慧, AI 新創, 文字擴散模型, 強化學習, 元學習, 元探索, 自然語言生成, AI 創辦人, 地端 AI, 本地大語言模型" />
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <link rel="canonical" href="https://yunyenchuang.com/" />
   <meta name="theme-color" content="#fdfdfd" />
@@ -55,7 +55,7 @@
         "jobTitle": ["Founder & CEO", "Data Scientist"],
         "worksFor": { "@type": "Organization", "name": "Maxora AI", "url": "https://maxora.ai" },
         "alumniOf": { "@type": "CollegeOrUniversity", "name": "National Taiwan University" },
-        "knowsAbout": ["Meta-Learning", "Reinforcement Learning", "Adversarial Learning", "Diffusion Models", "Natural Language Generation"],
+        "knowsAbout": ["Meta-Learning", "Reinforcement Learning", "Adversarial Learning", "Diffusion Models", "Natural Language Generation", "Molecular Geometry Generation"],
         "sameAs": [
           "https://maxora.ai",
           "https://github.com/KloudChuang",
@@ -101,6 +101,7 @@
       <div class="navitem has-menu">
         <button class="navlink-btn" type="button" aria-haspopup="true" aria-expanded="false">Research <span class="caret">▾</span></button>
         <div class="dropdown-menu">
+          <a href="research/ssd.html">SSD</a>
           <a href="research/meta-diffub.html">Meta-DiffuB</a>
           <a href="research/metaex-gan.html">MetaEx-GAN</a>
           <a href="research/qmvdet.html">QMVDet</a>
@@ -314,8 +315,20 @@
     <!-- ===================== RESEARCH ===================== -->
         <section id="research" class="sect" data-sect="03 / RESEARCH">
       <div class="sect-head reveal"><span class="idx">03</span><h2>Research</h2><span class="rule"></span></div>
-      <p class="lede reveal">Selected work on meta-exploration, text diffusion, and generative models. Each card opens a full, interactive walkthrough that steps through the method.</p>
+      <p class="lede reveal">Selected work on meta-exploration, text and molecular diffusion, and generative models. Each card opens a full, interactive walkthrough that steps through the method.</p>
       <div class="research-grid">
+        <a class="res-card reveal" href="research/ssd.html">
+          <span class="res-emblem"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="24" cy="24" r="17" stroke-dasharray="3 3.5" stroke="var(--accent)"/>
+  <circle cx="24" cy="7" r="2.2" fill="currentColor" stroke="none"/><circle cx="39" cy="31" r="2.2" fill="currentColor" stroke="none"/><circle cx="10" cy="33" r="2.2" fill="currentColor" stroke="none"/>
+  <path d="M24 11 v5 M35.5 29 l-4 -2 M13 31 l4 -2"/>
+  <path d="M20 24 l4 -3 l4 3 l-4 3 z"/>
+</svg></span>
+          <span class="res-venue">NeurIPS 2026</span>
+          <span class="res-title">SSD</span>
+          <span class="res-sub">Shell-guided spherical diffusion — a chemically scaled shell prior for 3D molecular geometry generation.</span>
+          <span class="res-go">Read the full method →</span>
+        </a>
         <a class="res-card reveal" href="research/meta-diffub.html">
           <span class="res-emblem"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M6 16 C 13 6, 21 6, 24 14 S 34 26, 42 15" stroke="var(--accent)"/>

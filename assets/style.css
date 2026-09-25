@@ -522,6 +522,8 @@ html.reveal-now .reveal { transition: none !important; }
   .research-grid .res-card:nth-child(4) .res-emblem [fill="var(--accent)"] { animation-delay: 1.5s; }
   .research-grid .res-card:nth-child(5) .res-emblem [stroke="var(--accent)"],
   .research-grid .res-card:nth-child(5) .res-emblem [fill="var(--accent)"] { animation-delay: 2s; }
+  .research-grid .res-card:nth-child(6) .res-emblem [stroke="var(--accent)"],
+  .research-grid .res-card:nth-child(6) .res-emblem [fill="var(--accent)"] { animation-delay: 2.5s; }
   .res-card:hover .res-emblem [stroke="var(--accent)"],
   .res-card:hover .res-emblem [fill="var(--accent)"] { animation: emblemPop 0.55s var(--ease); }
   @keyframes emblemPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }

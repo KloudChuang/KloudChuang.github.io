@@ -245,6 +245,50 @@
 .stat-accent { fill: var(--accent-deep); font-weight: 600; }
 .stat-cap { fill: var(--muted); font-family: var(--mono); }
 
+/* ============ SSD (#vizSsd) ============ */
+#vizSsd .gauss-ring { fill: none; stroke: var(--muted); stroke-width: 1.3; stroke-dasharray: 4 5; }
+#vizSsd .noise-dot { fill: var(--muted); }
+#vizSsd .wander { fill: none; stroke: var(--ink-2); stroke-width: 1.3; stroke-dasharray: 3 4; color: var(--ink-2); }
+#vizSsd[data-stage="0"] .wander { animation: dashMove 1.4s linear infinite; }
+#vizSsd .atom { fill: var(--ink-2); }
+#vizSsd .atom.on { fill: var(--accent); filter: drop-shadow(0 0 4px var(--accent-glow)); }
+#vizSsd .bond { stroke: var(--ink-2); stroke-width: 1.6; }
+#vizSsd .chem-ring { fill: none; stroke: var(--accent); stroke-width: 1.3; }
+#vizSsd .lbl-gauss { fill: var(--ink-2); font-weight: 600; }
+#vizSsd .lbl-chem { fill: var(--accent-deep); font-weight: 600; }
+#vizSsd .shell { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 6 5; }
+#vizSsd .shell.faint { stroke: var(--hair); }
+#vizSsd .center-dot { fill: var(--ink-2); }
+#vizSsd .radius-line { stroke: var(--accent-deep); stroke-width: 1.2; stroke-dasharray: 2 3; }
+#vizSsd .shell-spin { transform-origin: 230px 210px; }
+#vizSsd[data-stage="1"] .shell-spin { animation: ssdSpin 28s linear infinite; }
+@keyframes ssdSpin { to { transform: rotate(360deg); } }
+
+#vizSsd .fwd-line { stroke: var(--accent); stroke-width: 1.2; opacity: 0.7; stroke-dasharray: 4 5; }
+#vizSsd[data-stage="2"] .fwd-line { animation: dashMove 0.9s linear infinite; }
+#vizSsd .ou-curve { fill: none; stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 3 3; }
+#vizSsd .lin-curve { stroke: var(--accent); stroke-width: 1.8; }
+
+#vizSsd .drift-rad line { stroke: var(--accent); stroke-width: 1.8; color: var(--accent); }
+#vizSsd .drift-rep line { stroke: var(--ink-2); stroke-width: 1.8; color: var(--ink-2); }
+#vizSsd .drift-score path { fill: none; stroke: var(--accent-deep); stroke-width: 1.4; stroke-dasharray: 3 3; color: var(--accent-deep); }
+#vizSsd .dmin-ring { fill: none; stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 2 3; }
+#vizSsd .leg-rad { stroke: var(--accent); stroke-width: 1.8; color: var(--accent); }
+#vizSsd .leg-rep { stroke: var(--ink-2); stroke-width: 1.8; color: var(--ink-2); }
+#vizSsd .leg-score { fill: none; stroke: var(--accent-deep); stroke-width: 1.4; stroke-dasharray: 3 3; color: var(--accent-deep); }
+#vizSsd .shell-shrink { transform-origin: 230px 210px; }
+#vizSsd[data-stage="3"] .shell-shrink { animation: ssdShrink 2.6s var(--ease) infinite; }
+@keyframes ssdShrink { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.3); opacity: 0; } }
+
+#vizSsd .bar-base { fill: var(--faint); }
+#vizSsd .bar-ssd { fill: var(--accent); }
+#vizSsd .bb-lbl { fill: var(--ink); font-weight: 600; }
+#vizSsd .bb-met, #vizSsd .bar-val { fill: var(--muted); }
+#vizSsd .bar-val.ssd { fill: var(--accent-deep); font-weight: 600; }
+#vizSsd[data-stage="4"] .bar-ssd, #vizSsd[data-stage="4"] .bar-base { transform-box: fill-box; transform-origin: left; animation: ssdBar 0.6s var(--ease) both; }
+#vizSsd[data-stage="4"] .bar-ssd { animation-delay: 0.15s; }
+@keyframes ssdBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
 /* ============ QMVDet (#vizQmv) ============ */
 .cam { fill: var(--paper); stroke: var(--ink-2); stroke-width: 1.3; transition: stroke 0.4s, fill 0.4s; }
 .cam.reliable { stroke: var(--accent); fill: var(--accent-soft); }
