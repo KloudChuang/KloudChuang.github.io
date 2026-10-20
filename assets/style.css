@@ -505,6 +505,15 @@ html.reveal-now .reveal { transition: none !important; }
 .res-sub { font-size: 0.88rem; color: var(--ink-2); line-height: 1.5; flex: 1; }
 .res-go { font-family: var(--mono); font-size: 0.73rem; color: var(--accent-deep); margin-top: 0.35rem; }
 .res-card:hover .res-go { text-decoration: underline; }
+/* cards with an external project page: the main link stretches over the card, the external link sits above it */
+.res-card.has-ext { position: relative; }
+.res-card.has-ext .res-go::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.res-card.has-ext .res-go:focus-visible { outline: none; }
+.res-card.has-ext:focus-within { border-color: var(--accent-line); }
+.res-links { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem 1rem; margin-top: 0.35rem; }
+.res-links .res-go { margin-top: 0; }
+.res-ext { position: relative; z-index: 1; font-family: var(--mono); font-size: 0.73rem; color: var(--ink-2); }
+.res-ext:hover, .res-ext:focus-visible { color: var(--accent-deep); text-decoration: underline; }
 
 /* subtle life on the emblems (motion-safe only) */
 @media (prefers-reduced-motion: no-preference) {
